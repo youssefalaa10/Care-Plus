@@ -1,6 +1,7 @@
 import 'package:carepulse/Core/styles/image_manager.dart';
 import 'package:flutter/material.dart';
 
+import '../../../Core/Routing/routes.dart';
 import '../../../Core/styles/color_manager.dart';
 import '../../../Core/styles/icon_broken.dart';
 import '../../Home/UI/home_screen.dart';
@@ -47,7 +48,7 @@ class MainLayoutState extends State<MainLayout> {
                 borderRadius: BorderRadius.circular(30),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.15),
+                    color: Colors.black.withValues(alpha: 0.15),
                     blurRadius: 20,
                     offset: const Offset(0, 5),
                     spreadRadius: 1,
@@ -70,95 +71,94 @@ class MainLayoutState extends State<MainLayout> {
     );
   }
 
-Widget _buildNavItem(IconData icon, int index) {
-  final isSelected = _currentIndex == index;
-  return GestureDetector(
-    onTap: () {
-      setState(() {
-        _currentIndex = index;
-      });
-    },
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Stack(
-          alignment: Alignment.center,
-          clipBehavior: Clip.none,
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? ColorManager.primaryColor : Colors.grey,
-              size: 28,
-            ),
-            
-            if (isSelected)
-              Positioned(
-                bottom: -8, 
-                child: Image.asset(
-                  ImageManager.dotIcon,
-                  height: 8,
-                  width: 8,
-                ),
+  Widget _buildNavItem(IconData icon, int index) {
+    final isSelected = _currentIndex == index;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _currentIndex = index;
+        });
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Stack(
+            alignment: Alignment.center,
+            clipBehavior: Clip.none,
+            children: [
+              Icon(
+                icon,
+                color: isSelected ? ColorManager.primaryColor : Colors.grey,
+                size: 28,
               ),
-          ],
-        ),
-      ],
-    ),
-  );
-}
+              if (isSelected)
+                Positioned(
+                  bottom: -8,
+                  child: Image.asset(
+                    ImageManager.dotIcon,
+                    height: 8,
+                    width: 8,
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 
-Widget _buildNavItemWithBadge(IconData icon, int index, String badgeText) {
-  final isSelected = _currentIndex == index;
-  return GestureDetector(
-    onTap: () {
-      setState(() {
-        _currentIndex = index;
-      });
-    },
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Stack(
-          alignment: Alignment.center,
-          clipBehavior: Clip.none,
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? ColorManager.primaryColor : Colors.grey,
-              size: 28,
-            ),
-            Positioned(
-              top: -6, // وضع الشارة في الأعلى
-              right: -6,
-              child: CircleAvatar(
-                radius: 8,
-                backgroundColor: ColorManager.primaryColor,
-                child: Text(
-                  badgeText,
-                  style: const TextStyle(fontSize: 10, color: Colors.white),
-                ),
+  Widget _buildNavItemWithBadge(IconData icon, int index, String badgeText) {
+    final isSelected = _currentIndex == index;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _currentIndex = index;
+        });
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Stack(
+            alignment: Alignment.center,
+            clipBehavior: Clip.none,
+            children: [
+              Icon(
+                icon,
+                color: isSelected ? ColorManager.primaryColor : Colors.grey,
+                size: 28,
               ),
-            ),
-            if (isSelected)
               Positioned(
-                bottom: -8, // وضع النقطة في المركز السفلي
-                child: Image.asset(
-                  ImageManager.dotIcon,
-                  height: 8,
-                  width: 8,
+                top: -6,
+                right: -6,
+                child: CircleAvatar(
+                  radius: 8,
+                  backgroundColor: ColorManager.primaryColor,
+                  child: Text(
+                    badgeText,
+                    style: const TextStyle(fontSize: 10, color: Colors.white),
+                  ),
                 ),
               ),
-          ],
-        ),
-      ],
-    ),
-  );
-}
+              if (isSelected)
+                Positioned(
+                  bottom: -8,
+                  child: Image.asset(
+                    ImageManager.dotIcon,
+                    height: 8,
+                    width: 8,
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildAddButton() {
     return GestureDetector(
       onTap: () {
-        // Handle Add Button Click
+        Navigator.pushNamed(context, Routes.requestDoctorScreen);
       },
       child: Container(
         height: 60,
@@ -183,7 +183,7 @@ Widget _buildNavItemWithBadge(IconData icon, int index, String badgeText) {
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: Colors.white.withOpacity(0.3),
+                color: Colors.white.withValues(alpha: 0.3),
                 width: 2,
               ),
             ),

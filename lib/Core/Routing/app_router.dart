@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../Features/Auth/register/register_screen.dart';
 import '../../Features/Doctor-Details/UI/doctor_details_screen.dart';
 import '../../Features/Layout/UI/layout_screen.dart';
+import '../../Features/Request_Doctor/UI/request_doctor_screen.dart';
 import '../../Features/Schedule/schedule_screen.dart';
 import '../../Features/Top-Doctors/UI/top_doctors_screen.dart';
 
@@ -39,7 +40,11 @@ class AppRouter {
       // schedule screen
       case Routes.scheduleScreen:
         return MaterialPageRoute(builder: (_) => const ScheduleScreen());
+
+      // request doctor screen
+      case Routes.requestDoctorScreen:
+        return MaterialPageRoute(builder: (_) => const RequestDoctorScreen());
     }
-    return null;  
+    return null;
   }
 }
