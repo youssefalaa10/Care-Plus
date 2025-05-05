@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 
 import '../../../Core/components/media_query.dart';
+import '../../../Features/Top-Doctors/UI/top_doctors_screen.dart';
 import 'widgets/doctor_profile_section.dart';
 import 'widgets/doctor_stats_section.dart';
 
 class DoctorDetailsScreen extends StatelessWidget {
-  const DoctorDetailsScreen({super.key});
+  final Doctor? doctor;
+
+  const DoctorDetailsScreen({super.key, this.doctor});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +20,7 @@ class DoctorDetailsScreen extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: (){},
+          onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Appointment',
@@ -31,11 +34,11 @@ class DoctorDetailsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const DoctorProfileSection(),
+              DoctorProfileSection(doctor: doctor),
               SizedBox(height: mq.height(3)),
               const DoctorStatsSection(),
               SizedBox(height: mq.height(3)),
-              const AboutDoctorSection(),
+              AboutDoctorSection(doctor: doctor),
               SizedBox(height: mq.height(3)),
               const ScheduleSection(),
               SizedBox(height: mq.height(3)),
@@ -52,7 +55,9 @@ class DoctorDetailsScreen extends StatelessWidget {
 }
 
 class AboutDoctorSection extends StatelessWidget {
-  const AboutDoctorSection({super.key});
+  final Doctor? doctor;
+
+  const AboutDoctorSection({super.key, this.doctor});
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +74,7 @@ class AboutDoctorSection extends StatelessWidget {
         ),
         SizedBox(height: mq.height(1)),
         Text(
-          'Dr. Maria Waston is the top most Cardiologist specialist in Nanyang Hospotalat London. She is available for private consultation.',
+          '${doctor?.name ?? "Doctor"} is a ${doctor?.speciality ?? "specialist"} with excellent ratings. Available for private consultation.',
           style: TextStyle(
             fontSize: mq.width(3.8),
             color: Colors.grey[600],
@@ -108,7 +113,11 @@ class _ScheduleSectionState extends State<ScheduleSection> {
               ),
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                // Here you would typically handle the booking logic
+                // For now, just navigate back to the home screen
+                Navigator.pop(context);
+              },
               child: Row(
                 children: [
                   Text(
@@ -269,6 +278,7 @@ class _VisitHourSectionState extends State<VisitHourSection> {
     );
   }
 }
+
 class BookingButton extends StatelessWidget {
   const BookingButton({super.key});
 
@@ -278,7 +288,11 @@ class BookingButton extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: () {
+          // Here you would typically handle the booking logic
+          // For now, just navigate back to the home screen
+          Navigator.pop(context);
+        },
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFFB28CFF),
           padding: EdgeInsets.symmetric(vertical: mq.height(2)),

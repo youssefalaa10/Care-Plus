@@ -1,10 +1,12 @@
+import 'package:carepulse/Features/Doctor-Details/UI/doctor_details_screen.dart';
 import 'package:carepulse/Features/Top-Doctors/UI/top_doctors_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../../../Core/components/media_query.dart';
-import '../../../Core/components/styles/image_manager.dart';
+import '../../../Core/styles/image_manager.dart';
 import 'widgets/categories_section.dart';
 import 'widgets/welcome_section.dart';
+
 class DoctorFinderScreen extends StatelessWidget {
   DoctorFinderScreen({super.key});
 
@@ -23,16 +25,28 @@ class DoctorFinderScreen extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: mq.width(5)),
                 child: ListView.builder(
-                  physics: const NeverScrollableScrollPhysics(), 
-                  shrinkWrap: true, 
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
                   itemCount: doctorsList.length,
-                  itemBuilder: (context, index) => DoctorCard(
-                    doctor: doctorsList[index],
-                    mq: mq,
+                  itemBuilder: (context, index) => GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DoctorDetailsScreen(
+                            doctor: doctorsList[index],
+                          ),
+                        ),
+                      );
+                    },
+                    child: DoctorCard(
+                      doctor: doctorsList[index],
+                      mq: mq,
+                    ),
                   ),
                 ),
               ),
-              SizedBox(height: mq.height(2)), 
+              SizedBox(height: mq.height(2)),
             ],
           ),
         ),
@@ -45,31 +59,27 @@ class DoctorFinderScreen extends StatelessWidget {
     Doctor(
       name: 'Dr. Rodger Struck',
       speciality: 'Heart Surgeon, London, England',
-      imageUrl:
-          ImageManager.doctor1,
+      imageUrl: ImageManager.doctor1,
       rating: 4.8,
       isOnline: true,
     ),
     Doctor(
       name: 'Dr. Kathy Pacheco',
       speciality: 'Heart Surgeon, London, England',
-      imageUrl:
-          ImageManager.doctor1,
+      imageUrl: ImageManager.doctor1,
       rating: 4.8,
     ),
     Doctor(
       name: 'Dr. Lorri Warf',
       speciality: 'General Dentist',
-      imageUrl:
-           ImageManager.doctor1,
+      imageUrl: ImageManager.doctor1,
       rating: 4.8,
       isOnline: true,
     ),
     Doctor(
       name: 'Dr. Chris Glasser',
       speciality: 'Heart Surgeon, London, England',
-      imageUrl:
-         ImageManager.doctor1,
+      imageUrl: ImageManager.doctor1,
       rating: 4.8,
     ),
   ];

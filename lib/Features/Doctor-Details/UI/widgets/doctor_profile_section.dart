@@ -1,9 +1,13 @@
-import 'package:carepulse/Core/components/styles/image_manager.dart';
+import 'package:carepulse/Core/styles/image_manager.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../Core/components/media_query.dart';
+import '../../../../Features/Top-Doctors/UI/top_doctors_screen.dart';
+
 class DoctorProfileSection extends StatelessWidget {
-  const DoctorProfileSection({super.key});
+  final Doctor? doctor;
+
+  const DoctorProfileSection({super.key, this.doctor});
 
   @override
   Widget build(BuildContext context) {
@@ -21,9 +25,11 @@ class DoctorProfileSection extends StatelessWidget {
                   height: mq.width(30),
                   decoration: BoxDecoration(
                     color: Colors.grey[200], // Fallback background color
-                    image: const DecorationImage(
-                      image: AssetImage(ImageManager.doctor1),
-                      fit: BoxFit.contain, // Change to BoxFit.contain or BoxFit.fill
+                    image: DecorationImage(
+                      image:
+                          AssetImage(doctor?.imageUrl ?? ImageManager.doctor1),
+                      fit: BoxFit
+                          .contain, // Change to BoxFit.contain or BoxFit.fill
                     ),
                   ),
                 ),
@@ -44,7 +50,7 @@ class DoctorProfileSection extends StatelessWidget {
           ),
           SizedBox(height: mq.height(2)),
           Text(
-            'Dr. Maria Waston',
+            doctor?.name ?? 'Doctor Name',
             style: TextStyle(
               fontSize: mq.width(5),
               fontWeight: FontWeight.bold,
