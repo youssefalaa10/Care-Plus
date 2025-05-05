@@ -1,8 +1,8 @@
-import 'package:carepulse/Core/components/styles/icon_broken.dart';
+import 'package:carepulse/Core/styles/icon_broken.dart';
 import 'package:flutter/material.dart';
 
 import '../../../Core/components/media_query.dart';
-import '../../../Core/components/styles/image_manager.dart';
+import '../../../Core/styles/image_manager.dart';
 
 class TopDoctors extends StatelessWidget {
   const TopDoctors({super.key});
