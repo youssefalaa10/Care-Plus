@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../../../../Core/components/media_query.dart';
-import '../../../../Core/components/styles/icon_broken.dart';
-import '../../../../Core/components/styles/image_manager.dart';
+import '../../../../Core/styles/icon_broken.dart';
+
 
 class WelcomeSection extends StatelessWidget {
   const WelcomeSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-        final mq = CustomMQ(context);
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: const BoxDecoration(
@@ -22,32 +20,6 @@ class WelcomeSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Image.asset(
-                ImageManager.menu,
-                width: 20,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  // color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.transparent, width: 2),
-                ),
-                child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: Image.asset(
-                         ImageManager.doctor1,
-                        width: mq.width(12),
-                        height: mq.width(12),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
           const Text(
             'Welcome Back',
             style: TextStyle(

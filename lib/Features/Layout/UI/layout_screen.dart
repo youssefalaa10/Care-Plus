@@ -1,10 +1,10 @@
-import 'package:carepulse/Core/components/styles/image_manager.dart';
+import 'package:carepulse/Core/styles/image_manager.dart';
 import 'package:flutter/material.dart';
 
-import '../../../Core/components/styles/color_manager.dart';
-import '../../../Core/components/styles/icon_broken.dart';
-import '../../Doctor-Details/UI/doctor_details_screen.dart';
+import '../../../Core/styles/color_manager.dart';
+import '../../../Core/styles/icon_broken.dart';
 import '../../Home/UI/home_screen.dart';
+import '../../Schedule/schedule_screen.dart';
 import '../../Top-Doctors/UI/top_doctors_screen.dart';
 
 class MainLayout extends StatefulWidget {
@@ -20,7 +20,7 @@ class MainLayoutState extends State<MainLayout> {
   // Screen widgets
   final List<Widget> _screens = [
     DoctorFinderScreen(),
-    const DoctorDetailsScreen(),
+    ScheduleScreen(),
     const TopDoctors(),
   ];
 

@@ -1,25 +1,43 @@
+import 'package:carepulse/Core/Routing/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'Features/Layout/UI/layout_screen.dart';
+import 'Core/Routing/app_router.dart';
+// import 'Core/styles/app_theme.dart';
 
-void main() {
-  runApp(const MyApp());
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
+
+  runApp(MyApp(appRouter: AppRouter()));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final AppRouter appRouter;
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
+
+  const MyApp({super.key, required this.appRouter});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Care Plus',
-      theme: ThemeData(
-
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.white70),
-        useMaterial3: true,
-      ),
-      home: const MainLayout(),
+    return ScreenUtilInit(
+      designSize: const Size(375, 812),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) {
+        return MaterialApp(
+          title: 'Care Plus',
+          debugShowCheckedModeBanner: false,
+          navigatorKey: MyApp.navigatorKey,
+          initialRoute: Routes.mainLayout,
+          onGenerateRoute: appRouter.generateRoute,
+        );
+      },
     );
   }
 }
- 
