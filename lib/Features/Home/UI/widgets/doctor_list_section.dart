@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:carepulse/Core/components/media_query.dart';
+import 'package:carepulse/Features/Top-Doctors/Data/Model/doctor_model.dart';
+import 'package:carepulse/Features/Top-Doctors/Data/sample_doctors_data.dart';
 
 import 'doctor_card.dart';
 
@@ -7,23 +10,33 @@ class DoctorListSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20),
+    final mq = CustomMQ(context);
+    // Using the first two doctors from sample data
+    final List<DoctorModel> featuredDoctors = [
+      sampleDoctors[0],
+      sampleDoctors[1],
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          DoctorCard(
-            name: 'Dr. Maria Waston',
-            specialty: 'Heart Surgeon, London, England',
-            rating: '4.8',
-            isOnline: true,
+          const Text(
+            'Top Doctors',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          SizedBox(height: 15),
-          DoctorCard(
-            name: 'Dr. Stevi Jessi',
-            specialty: 'General Dentist',
-            rating: '4.7',
-            isOnline: true,
-          ),
+          const SizedBox(height: 15),
+          ...featuredDoctors.map((doctor) => Padding(
+                padding: const EdgeInsets.only(bottom: 15),
+                child: DoctorCard(
+                  doctor: doctor,
+                  mq: mq,
+                ),
+              )),
         ],
       ),
     );

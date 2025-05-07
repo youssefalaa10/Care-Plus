@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 
+import '../../../../Core/components/media_query.dart';
+import '../../../Top-Doctors/Data/Model/doctor_model.dart';
+
 class DoctorCard extends StatelessWidget {
-  final String name;
-  final String specialty;
-  final String rating;
-  final bool isOnline;
+  final DoctorModel doctor;
+final CustomMQ mq;
 
   const DoctorCard({
     super.key,
-    required this.name,
-    required this.specialty,
-    required this.rating,
-    required this.isOnline,
+    required this.doctor,
+    required this.mq,
   });
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -34,12 +35,21 @@ class DoctorCard extends StatelessWidget {
         children: [
           Stack(
             children: [
-              CircleAvatar(
-                radius: 30,
-                backgroundColor: Colors.grey[200],
-                child: const Icon(Icons.person, size: 35, color: Colors.grey),
-              ),
-              if (isOnline)
+              Image.network(
+              doctor.imageUrl,
+              width: mq.width(20),
+              height: mq.width(20),
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  width: mq.width(20),
+                  height: mq.width(20),
+                  color: Colors.grey[200],
+                  child: const Icon(Icons.person, size: 50),
+                );
+              },
+            ),
+              if (true)
                 Positioned(
                   right: 0,
                   top: 0,
@@ -61,7 +71,7 @@ class DoctorCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  name,
+                  doctor.name,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -69,7 +79,7 @@ class DoctorCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  specialty,
+                  doctor.speciality,
                   style: TextStyle(
                     color: Colors.grey[600],
                     fontSize: 14,
@@ -85,14 +95,14 @@ class DoctorCard extends StatelessWidget {
                   const Icon(Icons.star, color: Colors.amber, size: 16),
                   const SizedBox(width: 4),
                   Text(
-                    rating,
+                    doctor.rating.toString(),
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
               const SizedBox(height: 5),
               Text(
-                'Appointment',
+                doctor.location,
                 style: TextStyle(
                   color: Colors.grey[600],
                   fontSize: 12,

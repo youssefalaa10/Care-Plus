@@ -1,11 +1,28 @@
 import 'package:carepulse/Core/styles/icon_broken.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../Core/DI/dependency_injection.dart';
 import '../../../Core/components/media_query.dart';
 import '../../../Core/styles/image_manager.dart';
+import '../Data/Model/doctor_model.dart';
+import '../Logic/doctor_cubit.dart';
+import '../../Doctor-Details/UI/doctor_details_screen.dart';
 
-class TopDoctors extends StatelessWidget {
+class TopDoctors extends StatefulWidget {
   const TopDoctors({super.key});
+
+  @override
+  State<TopDoctors> createState() => _TopDoctorsState();
+}
+
+class _TopDoctorsState extends State<TopDoctors> {
+  @override
+  void initState() {
+    super.initState();
+    // Load doctors when screen initializes
+    context.read<DoctorCubit>().loadTopRatedDoctors();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,10 +34,10 @@ class TopDoctors extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black87),
-          onPressed: () {},
+          onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'Top Doctor',
+          'Top Doctors',
           style: TextStyle(
             fontSize: 18,
             color: Colors.black87,
@@ -38,13 +55,34 @@ class TopDoctors extends StatelessWidget {
             child: SearchBar(mq: mq),
           ),
           Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.symmetric(horizontal: mq.width(5)),
-              itemCount: doctorsList.length,
-              itemBuilder: (context, index) => DoctorCard(
-                doctor: doctorsList[index],
-                mq: mq,
-              ),
+            child: BlocBuilder<DoctorCubit, DoctorState>(
+              builder: (context, state) {
+                if (state is DoctorLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state is DoctorsLoaded) {
+                  final doctors = state.doctors;
+                  if (doctors.isEmpty) {
+                    return const Center(child: Text('No doctors found'));
+                  }
+                  return ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: mq.width(5)),
+                    itemCount: doctors.length,
+                    itemBuilder: (context, index) => DoctorCard(
+                      doctor: doctors[index],
+                      mq: mq,
+                    ),
+                  );
+                } else if (state is DoctorError) {
+                  return Center(child: Text('Error: ${state.message}'));
+                } else {
+                  // If no state is available yet, trigger loading
+                  // This ensures we always try to load from Firestore
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    context.read<DoctorCubit>().loadTopRatedDoctors();
+                  });
+                  return const Center(child: CircularProgressIndicator());
+                }
+              },
             ),
           ),
         ],
@@ -94,7 +132,7 @@ class SearchBar extends StatelessWidget {
 }
 
 class DoctorCard extends StatelessWidget {
-  final Doctor doctor;
+  final DoctorModel doctor;
   final CustomMQ mq;
 
   const DoctorCard({
@@ -143,7 +181,7 @@ class DoctorCard extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: mq.height(1)),
-                _buildActionButtons(),
+                _buildActionButtons(context),
               ],
             ),
           ),
@@ -155,11 +193,19 @@ class DoctorCard extends StatelessWidget {
   Widget buildDoctorImage() {
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
-      child: Image.asset(
+      child: Image.network(
         doctor.imageUrl,
         width: mq.width(16),
         height: mq.width(16),
         fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            width: mq.width(16),
+            height: mq.width(16),
+            color: Colors.grey[200],
+            child: const Icon(Icons.person, size: 40),
+          );
+        },
       ),
     );
   }
@@ -186,19 +232,32 @@ class DoctorCard extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons(context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        _buildActionButton(
-          'Appointment',
-          textColor: Colors.black87,
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => BlocProvider(
+                  create: (context) => getIt<DoctorCubit>(),
+                  child: DoctorDetailsScreen(doctor: doctor),
+                ),
+              ),
+            );
+          },
+          child: _buildActionButton(
+            'Appointment',
+            textColor: Colors.black87,
+          ),
         ),
         SizedBox(width: mq.width(2)),
         Container(
           padding: EdgeInsets.all(mq.width(1.5)),
           decoration: BoxDecoration(
-            color: const Color(0xFFF7F8F8), 
+            color: const Color(0xFFF7F8F8),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Image.asset(
@@ -250,52 +309,4 @@ class DoctorCard extends StatelessWidget {
   }
 }
 
-class Doctor {
-  final String name;
-  final String speciality;
-  final String imageUrl;
-  final double rating;
-  final bool isOnline;
-
-  Doctor({
-    required this.name,
-    required this.speciality,
-    required this.imageUrl,
-    required this.rating,
-    this.isOnline = false,
-  });
-}
-
-// Sample data
-final List<Doctor> doctorsList = [
-  Doctor(
-    name: 'Dr. Rodger Struck',
-    speciality: 'Heart Surgeon, London, England',
-    imageUrl:
-         ImageManager.doctor1,
-    rating: 4.8,
-    isOnline: true,
-  ),
-  Doctor(
-    name: 'Dr. Kathy Pacheco',
-    speciality: 'Heart Surgeon, London, England',
-    imageUrl:
-       ImageManager.doctor1,
-    rating: 4.8,
-  ),
-  Doctor(
-    name: 'Dr. Lorri Warf',
-    speciality: 'General Dentist',
-    imageUrl:
-       ImageManager.doctor1,
-    rating: 4.8,
-    isOnline: true,
-  ),
-  Doctor(
-    name: 'Dr. Chris Glasser',
-    speciality: 'Heart Surgeon, London, England',
-    imageUrl:
-        ImageManager.doctor1,
-    rating: 4.8,
-  ),
-];
+// Doctor model is now defined in the Data/Model directory

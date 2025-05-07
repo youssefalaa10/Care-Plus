@@ -1,11 +1,15 @@
+import 'package:carepulse/Core/DI/dependency_injection.dart';
 import 'package:carepulse/Core/styles/image_manager.dart';
+import 'package:carepulse/Features/Auth/logic/auth_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../Core/Routing/routes.dart';
 import '../../../Core/styles/color_manager.dart';
 import '../../../Core/styles/icon_broken.dart';
 import '../../Home/UI/home_screen.dart';
 import '../../Schedule/schedule_screen.dart';
+import '../../Top-Doctors/Logic/doctor_cubit.dart';
 import '../../Top-Doctors/UI/top_doctors_screen.dart';
 
 class MainLayout extends StatefulWidget {
@@ -20,9 +24,24 @@ class MainLayoutState extends State<MainLayout> {
 
   // Screen widgets
   final List<Widget> _screens = [
-    DoctorFinderScreen(),
-    ScheduleScreen(),
-    const TopDoctors(),
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => getIt<DoctorCubit>()),
+        BlocProvider(create: (context) => getIt<AuthCubit>()),
+      ],
+      child: DoctorFinderScreen(),
+    ),
+    BlocProvider(
+      create: (context) => getIt<DoctorCubit>(),
+      child: ScheduleScreen(),
+    ),
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => getIt<DoctorCubit>()),
+        BlocProvider(create: (context) => getIt<AuthCubit>()),
+      ],
+      child: TopDoctors(),
+    ),
   ];
 
   @override

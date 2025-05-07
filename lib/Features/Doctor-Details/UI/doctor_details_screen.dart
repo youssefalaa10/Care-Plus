@@ -1,14 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../Core/components/media_query.dart';
-import '../../../Features/Top-Doctors/UI/top_doctors_screen.dart';
+import '../../../Features/Top-Doctors/Data/Model/doctor_model.dart';
+import '../../../Features/Top-Doctors/Logic/doctor_cubit.dart';
+import '../../../Features/Auth/Data/Model/user_model.dart';
+import '../../../Features/Auth/logic/auth_cubit.dart';
+import '../../../Features/Auth/logic/auth_state.dart';
+// Book appointment screen removed - booking now handled directly in this screen
 import 'widgets/doctor_profile_section.dart';
 import 'widgets/doctor_stats_section.dart';
 
-class DoctorDetailsScreen extends StatelessWidget {
-  final Doctor? doctor;
+class DoctorDetailsScreen extends StatefulWidget {
+  final DoctorModel doctor;
 
-  const DoctorDetailsScreen({super.key, this.doctor});
+  const DoctorDetailsScreen({super.key, required this.doctor});
+
+  @override
+  State<DoctorDetailsScreen> createState() => _DoctorDetailsScreenState();
+}
+
+class _DoctorDetailsScreenState extends State<DoctorDetailsScreen> {
+  // Shared state for selected day index
+  int selectedDayIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -34,17 +48,28 @@ class DoctorDetailsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              DoctorProfileSection(doctor: doctor),
+              DoctorProfileSection(doctor: widget.doctor),
               SizedBox(height: mq.height(3)),
               const DoctorStatsSection(),
               SizedBox(height: mq.height(3)),
-              AboutDoctorSection(doctor: doctor),
+              AboutDoctorSection(doctor: widget.doctor),
               SizedBox(height: mq.height(3)),
-              const ScheduleSection(),
+              ScheduleSection(
+                doctor: widget.doctor,
+                selectedIndex: selectedDayIndex,
+                onDaySelected: (index) {
+                  setState(() {
+                    selectedDayIndex = index;
+                  });
+                },
+              ),
               SizedBox(height: mq.height(3)),
-              const VisitHourSection(),
+              VisitHourSection(
+                doctor: widget.doctor,
+                selectedDayIndex: selectedDayIndex,
+              ),
               SizedBox(height: mq.height(4)),
-              const BookingButton(),
+              BookingButton(doctor: widget.doctor),
               SizedBox(height: mq.height(4)),
             ],
           ),
@@ -55,9 +80,9 @@ class DoctorDetailsScreen extends StatelessWidget {
 }
 
 class AboutDoctorSection extends StatelessWidget {
-  final Doctor? doctor;
+  final DoctorModel doctor;
 
-  const AboutDoctorSection({super.key, this.doctor});
+  const AboutDoctorSection({super.key, required this.doctor});
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +99,7 @@ class AboutDoctorSection extends StatelessWidget {
         ),
         SizedBox(height: mq.height(1)),
         Text(
-          '${doctor?.name ?? "Doctor"} is a ${doctor?.speciality ?? "specialist"} with excellent ratings. Available for private consultation.',
+          doctor.about,
           style: TextStyle(
             fontSize: mq.width(3.8),
             color: Colors.grey[600],
@@ -87,14 +112,23 @@ class AboutDoctorSection extends StatelessWidget {
 }
 
 class ScheduleSection extends StatefulWidget {
-  const ScheduleSection({super.key});
+  final DoctorModel doctor;
+  final int selectedIndex;
+  final Function(int) onDaySelected;
+
+  const ScheduleSection({
+    super.key,
+    required this.doctor,
+    required this.selectedIndex,
+    required this.onDaySelected,
+  });
 
   @override
   State<ScheduleSection> createState() => _ScheduleSectionState();
 }
 
 class _ScheduleSectionState extends State<ScheduleSection> {
-  int selectedIndex = 1; // Default selected index
+  // Using the selectedIndex from parent widget
 
   @override
   Widget build(BuildContext context) {
@@ -114,43 +148,57 @@ class _ScheduleSectionState extends State<ScheduleSection> {
             ),
             TextButton(
               onPressed: () {
-                // Here you would typically handle the booking logic
-                // For now, just navigate back to the home screen
-                Navigator.pop(context);
+                // Scroll to booking section instead of navigating to a separate screen
+                Scrollable.ensureVisible(
+                  context
+                          .findAncestorStateOfType<_VisitHourSectionState>()
+                          ?.context ??
+                      context,
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.easeInOut,
+                );
               },
               child: Row(
                 children: [
                   Text(
-                    'August',
+                    'See All',
                     style: TextStyle(
-                      color: Colors.grey[400],
+                      color: Colors.grey.withValues(alpha: 0.5),
                       fontSize: mq.width(3.8),
                     ),
                   ),
-                  Icon(Icons.chevron_right, size: mq.width(5)),
+                  Icon(
+                    Icons.chevron_right,
+                    size: mq.width(5),
+                    color: Colors.grey.withValues(alpha: 0.5),
+                  ),
                 ],
               ),
             ),
           ],
         ),
         SizedBox(height: mq.height(2)),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: List.generate(
-            5,
-            (index) => GestureDetector(
-              onTap: () {
-                setState(() {
-                  selectedIndex = index;
-                });
-              },
-              child: _buildDateCard(
-                context,
-                (index + 6).toString(),
-                ['Sun', 'Mon', 'Tue', 'Wen', 'Tur'][index],
-                index == selectedIndex,
-              ),
-            ),
+        SizedBox(
+          height: mq.height(10),
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: widget.doctor.daySchedules.length,
+            itemBuilder: (context, index) {
+              final daySchedule = widget.doctor.daySchedules[index];
+              final isSelected = widget.selectedIndex == index;
+
+              return GestureDetector(
+                onTap: () {
+                  widget.onDaySelected(index);
+                },
+                child: _buildDateCard(
+                  context,
+                  (index + 6).toString(),
+                  daySchedule.day,
+                  isSelected,
+                ),
+              );
+            },
           ),
         ),
       ],
@@ -161,6 +209,7 @@ class _ScheduleSectionState extends State<ScheduleSection> {
       BuildContext context, String date, String day, bool isSelected) {
     final mq = CustomMQ(context);
     return Container(
+      margin: EdgeInsets.only(right: mq.width(3)),
       padding: EdgeInsets.symmetric(
         horizontal: mq.width(4),
         vertical: mq.height(1),
@@ -173,6 +222,7 @@ class _ScheduleSectionState extends State<ScheduleSection> {
         ),
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
             date,
@@ -197,34 +247,49 @@ class _ScheduleSectionState extends State<ScheduleSection> {
 }
 
 class VisitHourSection extends StatefulWidget {
-  const VisitHourSection({super.key});
+  final DoctorModel doctor;
+  final int selectedDayIndex;
+
+  const VisitHourSection({
+    super.key,
+    required this.doctor,
+    required this.selectedDayIndex,
+  });
 
   @override
   State<VisitHourSection> createState() => _VisitHourSectionState();
 }
 
 class _VisitHourSectionState extends State<VisitHourSection> {
-  int selectedIndex = 1; // Default selected index
-  final hours = [
-    '11:00AM',
-    '12:00AM',
-    '01:00AM',
-    '02:00AM',
-    '03:00AM',
-    '04:00AM',
-    '05:00AM',
-    '06:00AM'
-  ];
+  int selectedTimeIndex = -1; // No time selected by default
+
+  // Getter for the selected time slot
+  TimeSlot? get selectedTimeSlot {
+    if (selectedTimeIndex == -1) return null;
+    final selectedDaySchedule =
+        widget.doctor.daySchedules[widget.selectedDayIndex];
+    return selectedDaySchedule.availableHours[selectedTimeIndex];
+  }
+
+  // Getter for the selected day
+  String get selectedDay {
+    return widget.doctor.daySchedules[widget.selectedDayIndex].day;
+  }
 
   @override
   Widget build(BuildContext context) {
     final mq = CustomMQ(context);
 
+    // Get the selected day schedule
+    final selectedDaySchedule =
+        widget.doctor.daySchedules[widget.selectedDayIndex];
+    final availableHours = selectedDaySchedule.availableHours;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Visit Hour',
+          'Visit Hours (${selectedDaySchedule.day})',
           style: TextStyle(
             fontSize: mq.width(4.5),
             fontWeight: FontWeight.bold,
@@ -235,79 +300,139 @@ class _VisitHourSectionState extends State<VisitHourSection> {
           spacing: mq.width(3),
           runSpacing: mq.height(2),
           children: List.generate(
-            hours.length,
-            (index) => GestureDetector(
-              onTap: () {
-                setState(() {
-                  selectedIndex = index;
-                });
-              },
-              child: _buildTimeChip(
-                context,
-                hours[index],
-                index == selectedIndex,
-              ),
-            ),
+            availableHours.length,
+            (index) {
+              final timeSlot = availableHours[index];
+              final isSelected = selectedTimeIndex == index;
+              final isBooked = timeSlot.isBooked;
+
+              return GestureDetector(
+                onTap: isBooked
+                    ? null
+                    : () {
+                        setState(() {
+                          selectedTimeIndex = index;
+                        });
+                      },
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: mq.width(4),
+                    vertical: mq.height(1),
+                  ),
+                  decoration: BoxDecoration(
+                    color: isBooked
+                        ? Colors.grey[300]
+                        : isSelected
+                            ? const Color(0xFFB28CFF)
+                            : Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: isBooked
+                          ? Colors.grey[300]!
+                          : isSelected
+                              ? const Color(0xFFB28CFF)
+                              : Colors.grey.shade300,
+                    ),
+                  ),
+                  child: Text(
+                    '${timeSlot.startTime} - ${timeSlot.endTime}',
+                    style: TextStyle(
+                      fontSize: mq.width(3.5),
+                      color: isBooked
+                          ? Colors.grey[500]
+                          : isSelected
+                              ? Colors.white
+                              : Colors.grey[600],
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ],
     );
   }
-
-  Widget _buildTimeChip(BuildContext context, String time, bool isSelected) {
-    final mq = CustomMQ(context);
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: mq.width(4),
-        vertical: mq.height(1),
-      ),
-      decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFFB28CFF) : Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: isSelected ? const Color(0xFFB28CFF) : Colors.grey.shade300,
-        ),
-      ),
-      child: Text(
-        time,
-        style: TextStyle(
-          fontSize: mq.width(3.5),
-          color: isSelected ? Colors.white : Colors.grey[600],
-        ),
-      ),
-    );
-  }
 }
 
 class BookingButton extends StatelessWidget {
-  const BookingButton({super.key});
+  final DoctorModel doctor;
+
+  const BookingButton({super.key, required this.doctor});
 
   @override
   Widget build(BuildContext context) {
     final mq = CustomMQ(context);
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () {
-          // Here you would typically handle the booking logic
-          // For now, just navigate back to the home screen
-          Navigator.pop(context);
+    final visitHourState =
+        context.findAncestorStateOfType<_VisitHourSectionState>();
+    final selectedTimeSlot = visitHourState?.selectedTimeSlot;
+    final selectedDay = visitHourState?.selectedDay;
+
+    return BlocListener<DoctorCubit, DoctorState>(
+      listener: (context, state) {
+        if (state is AppointmentBookingSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Appointment booked successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } else if (state is AppointmentBookingError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error: ${state.message}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      },
+      child: BlocBuilder<AuthCubit, AuthState>(
+        builder: (context, authState) {
+          final UserModel? currentUser = authState.user;
+
+          return BlocBuilder<DoctorCubit, DoctorState>(
+            builder: (context, state) {
+              final isLoading = state is AppointmentBookingLoading;
+              final isDisabled = selectedDay == null ||
+                  selectedTimeSlot == null ||
+                  currentUser == null ||
+                  isLoading;
+
+              return SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: isDisabled
+                      ? null
+                      : () {
+                          // Book appointment directly
+                          context.read<DoctorCubit>().bookAppointment(
+                                doctorId: doctor.id,
+                                userId: currentUser.uid,
+                                day: selectedDay,
+                                timeSlot: selectedTimeSlot,
+                              );
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFB28CFF),
+                    padding: EdgeInsets.symmetric(vertical: mq.height(2)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    disabledBackgroundColor: Colors.grey[300],
+                  ),
+                  child: Text(
+                    isLoading ? 'Booking...' : 'Book Appointment',
+                    style: TextStyle(
+                      color: isDisabled ? Colors.grey[600] : Colors.white,
+                      fontSize: mq.width(4),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
         },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFB28CFF),
-          padding: EdgeInsets.symmetric(vertical: mq.height(2)),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-        ),
-        child: Text(
-          'Book Appointment',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: mq.width(4),
-            fontWeight: FontWeight.bold,
-          ),
-        ),
       ),
     );
   }

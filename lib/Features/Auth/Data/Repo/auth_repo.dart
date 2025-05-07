@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:carepulse/Features/Auth/Data/Model/user_model.dart';
 
 class AuthRepo {
@@ -81,6 +82,16 @@ class AuthRepo {
 
       // Update user profile with name
       await user.updateDisplayName(name);
+
+      // Create user document in Firestore
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+        'uid': user.uid,
+        'email': user.email,
+        'name': name,
+        'phoneNumber': user.phoneNumber,
+        'photoUrl': user.photoURL,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
 
       return UserModel(
         uid: user.uid,

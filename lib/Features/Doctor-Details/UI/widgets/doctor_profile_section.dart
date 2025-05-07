@@ -2,12 +2,12 @@ import 'package:carepulse/Core/styles/image_manager.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../Core/components/media_query.dart';
-import '../../../../Features/Top-Doctors/UI/top_doctors_screen.dart';
+import '../../../../Features/Top-Doctors/Data/Model/doctor_model.dart';
 
 class DoctorProfileSection extends StatelessWidget {
-  final Doctor? doctor;
+  final DoctorModel doctor;
 
-  const DoctorProfileSection({super.key, this.doctor});
+  const DoctorProfileSection({super.key, required this.doctor});
 
   @override
   Widget build(BuildContext context) {
@@ -26,10 +26,10 @@ class DoctorProfileSection extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.grey[200], // Fallback background color
                     image: DecorationImage(
-                      image:
-                          AssetImage(doctor?.imageUrl ?? ImageManager.doctor1),
-                      fit: BoxFit
-                          .contain, // Change to BoxFit.contain or BoxFit.fill
+                      image: NetworkImage(doctor.imageUrl),
+                      fit: BoxFit.cover,
+                      onError: (exception, stackTrace) =>
+                          const AssetImage(ImageManager.doctor1),
                     ),
                   ),
                 ),
@@ -50,7 +50,7 @@ class DoctorProfileSection extends StatelessWidget {
           ),
           SizedBox(height: mq.height(2)),
           Text(
-            doctor?.name ?? 'Doctor Name',
+            doctor.name ?? 'Doctor Name',
             style: TextStyle(
               fontSize: mq.width(5),
               fontWeight: FontWeight.bold,
