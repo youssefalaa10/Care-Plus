@@ -1,14 +1,26 @@
 import 'package:carepulse/Core/Routing/routes.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'Core/DI/dependency_injection.dart';
 import 'Core/Routing/app_router.dart';
+import 'Features/Auth/logic/auth_cubit.dart';
+import 'firebase_options.dart';
 // import 'Core/styles/app_theme.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // Initialize dependency injection
+  setUpGetIt();
+
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
@@ -30,12 +42,19 @@ class MyApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return MaterialApp(
-          title: 'Care Plus',
-          debugShowCheckedModeBanner: false,
-          navigatorKey: MyApp.navigatorKey,
-          initialRoute: Routes.mainLayout,
-          onGenerateRoute: appRouter.generateRoute,
+        return MultiBlocProvider(
+          providers: [
+        BlocProvider<AuthCubit>(
+          create: (context) => getIt<AuthCubit>(),
+        ),
+          ],
+          child: MaterialApp(
+            title: 'Care Plus',
+            debugShowCheckedModeBanner: false,
+            navigatorKey: MyApp.navigatorKey,
+            initialRoute: Routes.registerScreen,
+            onGenerateRoute: appRouter.generateRoute,
+          ),
         );
       },
     );

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:carepulse/Core/components/custom_text_form_field.dart';
-import 'package:carepulse/Features/Auth/register/register_screen.dart';
+import 'package:carepulse/Features/Auth/logic/auth_cubit.dart';
+import 'package:carepulse/Features/Auth/logic/auth_state.dart';
+import 'package:carepulse/Core/DI/dependency_injection.dart';
+import 'package:carepulse/Core/Routing/routes.dart';
 
-import '../../../../Core/components/custom_button.dart';
+import '../../../../../Core/components/custom_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -54,9 +58,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _signIn() {
     if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Processing Sign In')),
-      );
+      context.read<AuthCubit>().signInWithEmailAndPassword(
+            _emailController.text.trim(),
+            _passwordController.text,
+          );
     }
   }
 
@@ -64,33 +69,54 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     ScreenUtil.init(context);
 
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.w),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _buildHeaderSection(),
-                    SizedBox(height: 32.h),
-                    _buildFormFields(),
-                    SizedBox(height: 24.h),
-                    _buildSignInButton(),
-                    SizedBox(height: 16.h),
-                    _buildRegistrationLink(),
-                  ],
+    return BlocProvider(
+      create: (context) => getIt<AuthCubit>(),
+      child: BlocConsumer<AuthCubit, AuthState>(
+        listener: (context, state) {
+          if (state.status == AuthStatus.error) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text(state.errorMessage ?? 'An error occurred')),
+            );
+          } else if (state.status == AuthStatus.authenticated) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Login successful')),
+            );
+            // Navigate to home screen or dashboard
+            Navigator.pushReplacementNamed(context, Routes.mainLayout);
+          }
+        },
+        builder: (context, state) {
+          return Scaffold(
+            resizeToAvoidBottomInset: false,
+            backgroundColor: Colors.white,
+            body: SafeArea(
+              child: Center(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24.w),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _buildHeaderSection(),
+                          SizedBox(height: 32.h),
+                          _buildFormFields(),
+                          SizedBox(height: 24.h),
+                          _buildSignInButton(),
+                          SizedBox(height: 16.h),
+                          _buildRegistrationLink(),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
@@ -199,14 +225,19 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildSignInButton() {
-    return CustomButton(
-      text: 'Sign In',
-      fontSize: 16.sp,
-      fontWeight: FontWeight.w600,
-      textColor: Colors.white,
-      backgroundColor: Colors.blue,
-      borderRadius: 16.r,
-      onPressed: _signIn,
+    return BlocBuilder<AuthCubit, AuthState>(
+      builder: (context, state) {
+        final isLoading = state.status == AuthStatus.loading;
+        return CustomButton(
+          text: isLoading ? 'Signing In...' : 'Sign In',
+          fontSize: 16.sp,
+          fontWeight: FontWeight.w600,
+          textColor: Colors.white,
+          backgroundColor: Colors.blue,
+          borderRadius: 16.r,
+          onPressed: isLoading ? () {} : _signIn,
+        );
+      },
     );
   }
 
@@ -223,11 +254,9 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         TextButton(
           onPressed: () {
-            Navigator.push(
+            Navigator.pushNamed(
               context,
-              MaterialPageRoute(
-                builder: (context) => const RegisterScreen(),
-              ),
+              Routes.registerScreen,
             );
           },
           child: Text(

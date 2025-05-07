@@ -1,8 +1,12 @@
 import 'package:carepulse/Core/Routing/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:carepulse/Core/components/custom_text_form_field.dart';
 import 'package:carepulse/Core/components/custom_button.dart';
+
+import '../../../logic/auth_cubit.dart';
+import '../../../logic/auth_state.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -81,9 +85,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
         return;
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Processing Registration')),
-      );
+      context.read<AuthCubit>().registerWithEmailAndPassword(
+            email: _emailController.text.trim(),
+            password: _passwordController.text,
+            name: _nameController.text.trim(),
+          );
     }
   }
 
@@ -162,7 +168,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
           validator: _validateName,
           label: 'Full Name',
           hintText: 'Enter your full name',
-          borderColor: Colors.grey.shade300,
           focusedBorderColor: Colors.blue.shade300,
           errorBorderColor: Colors.red.shade300,
         ),
@@ -258,14 +263,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget _buildRegisterButton() {
-    return CustomButton(
-      text: 'Register',
-      fontSize: 16.sp,
-      fontWeight: FontWeight.w600,
-      textColor: Colors.white,
-      backgroundColor: Colors.blue,
-      borderRadius: 16.r,
-      onPressed: _register,
+    return BlocBuilder<AuthCubit, AuthState>(
+      builder: (context, state) {
+        final isLoading = state.status == AuthStatus.loading;
+
+        return BlocListener<AuthCubit, AuthState>(
+          listener: (context, state) {
+            if (state.status == AuthStatus.error) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                    content: Text(state.errorMessage ?? 'Registration failed')),
+              );
+            } else if (state.status == AuthStatus.authenticated) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Registration successful')),
+              );
+              Navigator.pushReplacementNamed(context, Routes.mainLayout);
+            }
+          },
+          child: CustomButton(
+            text: isLoading ? 'Registering...' : 'Register',
+            fontSize: 16,
+            textColor: Colors.white,
+            backgroundColor: Colors.blue,
+            borderRadius: 16.r,
+            onPressed: isLoading ? () {} : _register,
+          ),
+        );
+      },
     );
   }
 

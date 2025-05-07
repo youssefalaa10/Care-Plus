@@ -4,7 +4,7 @@ import '../styles/color_manager.dart';
 
 class CustomButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final Color? backgroundColor;
   final Color? textColor;
   final double? verticalPadding;
@@ -14,6 +14,7 @@ class CustomButton extends StatelessWidget {
   final double? width;
   final Widget? icon;
   final double? horizontalPadding;
+  final bool isDisabled;
 
   const CustomButton({
     super.key,
@@ -28,6 +29,7 @@ class CustomButton extends StatelessWidget {
     this.fontWeight = FontWeight.bold,
     this.width = double.infinity,
     this.icon,
+    this.isDisabled = false,
   });
 
   @override
@@ -36,9 +38,9 @@ class CustomButton extends StatelessWidget {
     return SizedBox(
       width: width,
       child: ElevatedButton(
-        onPressed: onPressed,
+        onPressed: isDisabled ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: backgroundColor,
+          backgroundColor: isDisabled ? Colors.grey[300] : backgroundColor,
           padding: EdgeInsets.symmetric(
             vertical: verticalPadding ?? mq.height(2),
             horizontal: horizontalPadding ?? 0,
