@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../Schedule/Data/Model/appointment_model.dart';
+
 class UserModel extends Equatable {
   final String uid;
   final String email;
@@ -7,7 +9,7 @@ class UserModel extends Equatable {
   final String? phoneNumber;
   final String? photoUrl;
   final String role;
-  final List<String> appointments;
+  final List<Appointment> appointments;
 
   const UserModel({
     required this.uid,
@@ -28,7 +30,7 @@ class UserModel extends Equatable {
       photoUrl: json['photoUrl'] as String?,
       role: json['role'] as String? ?? 'patient',
       appointments: (json['appointments'] as List<dynamic>?)
-              ?.map((e) => e as String)
+              ?.map((e) => Appointment.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
     );
@@ -42,7 +44,7 @@ class UserModel extends Equatable {
       'phoneNumber': phoneNumber,
       'photoUrl': photoUrl,
       'role': role,
-      'appointments': appointments,
+      'appointments': appointments.map((e) => e.toJson()).toList(),
     };
   }
 
@@ -53,7 +55,7 @@ class UserModel extends Equatable {
     String? phoneNumber,
     String? photoUrl,
     String? role,
-    List<String>? appointments,
+    List<Appointment>? appointments,
   }) {
     return UserModel(
       uid: uid ?? this.uid,

@@ -22,15 +22,27 @@ class DoctorFinderScreen extends StatefulWidget {
 }
 
 class _DoctorFinderScreenState extends State<DoctorFinderScreen> {
-  // Will fetch doctors from Firestore
   late List<DoctorModel> doctorsList = [];
+  String _searchQuery = '';
+  String? _selectedCategory;
 
   @override
   void initState() {
     super.initState();
-    // Load doctors when screen initializes
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<DoctorCubit>().loadTopRatedDoctors(limit: 5);
+    });
+  }
+
+  void _onSearchChanged(String query) {
+    setState(() {
+      _searchQuery = query;
+    });
+  }
+
+  void _onCategorySelected(String? category) {
+    setState(() {
+      _selectedCategory = category;
     });
   }
 
@@ -45,8 +57,10 @@ class _DoctorFinderScreenState extends State<DoctorFinderScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const WelcomeSection(),
-              const CategoriesSection(),
+              WelcomeSection(onSearchChanged: _onSearchChanged),
+              CategoriesSection(
+                  onCategorySelected: _onCategorySelected,
+                  selectedCategory: _selectedCategory),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: mq.width(5)),
                 child: BlocBuilder<DoctorCubit, DoctorState>(
@@ -54,7 +68,22 @@ class _DoctorFinderScreenState extends State<DoctorFinderScreen> {
                     if (state is DoctorLoading) {
                       return const Center(child: CircularProgressIndicator());
                     } else if (state is DoctorsLoaded) {
-                      final doctors = state.doctors;
+                      var doctors = state.doctors;
+                      if (_searchQuery.isNotEmpty) {
+                        doctors = doctors
+                            .where((d) => d.name
+                                .toLowerCase()
+                                .contains(_searchQuery.toLowerCase()))
+                            .toList();
+                      }
+                      if (_selectedCategory != null &&
+                          _selectedCategory!.isNotEmpty) {
+                        doctors = doctors
+                            .where((d) => d.speciality
+                                .toLowerCase()
+                                .contains(_selectedCategory!.toLowerCase()))
+                            .toList();
+                      }
                       if (doctors.isEmpty) {
                         return const Center(child: Text('No doctors found'));
                       }
@@ -83,7 +112,6 @@ class _DoctorFinderScreenState extends State<DoctorFinderScreen> {
                         ),
                       );
                     } else if (state is DoctorError) {
-                      // Show error message
                       return Center(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,

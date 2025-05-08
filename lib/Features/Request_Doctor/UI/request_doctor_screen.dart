@@ -1,8 +1,12 @@
 import 'package:carepulse/Core/styles/color_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../Core/styles/image_manager.dart';
+import '../../Doctor-Details/UI/doctor_details_screen.dart';
+import '../../Top-Doctors/Data/Model/doctor_model.dart';
+import '../../Top-Doctors/Logic/doctor_cubit.dart';
 
 class RequestDoctorScreen extends StatefulWidget {
   const RequestDoctorScreen({super.key});
@@ -16,6 +20,22 @@ class _RequestDoctorScreenState extends State<RequestDoctorScreen> {
   String _selectedLocation = 'NewYork';
   bool isSearchExpanded = false;
   int? _selectedSpecialtyIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    // Load doctors when screen is opened
+    context.read<DoctorCubit>().loadDoctors();
+
+    // Add listener to search controller
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  void _onSearchChanged() {
+    // Search doctors when text changes
+    final query = _searchController.text.trim();
+    context.read<DoctorCubit>().searchDoctors(query);
+  }
 
   // List of medical specialties with their icons
   final List<Map<String, String>> _specialties = [
@@ -39,6 +59,7 @@ class _RequestDoctorScreenState extends State<RequestDoctorScreen> {
 
   @override
   void dispose() {
+    _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
     super.dispose();
   }
@@ -60,24 +81,73 @@ class _RequestDoctorScreenState extends State<RequestDoctorScreen> {
               _buildCategoriesSection(),
               SizedBox(height: 20.h),
               Expanded(
-                child: Center(
-                  
-                  child: _selectedSpecialtyIndex != null
-                      ? Text(
-                          'Showing doctors for ${_specialties[_selectedSpecialtyIndex!]['name']!.replaceAll('\n', ' ')}',
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            color: Colors.purple,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        )
-                      : Text(
-                          'Select a specialty to find doctors',
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            color: Colors.grey,
-                          ),
-                        ),
+                child: BlocBuilder<DoctorCubit, DoctorState>(
+                  builder: (context, state) {
+                    if (state is DoctorLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (state is DoctorsLoaded) {
+                      // Filter doctors by selected specialty
+                      final doctors = state.doctors.where((doctor) {
+                        final matchesCategory = _selectedSpecialtyIndex ==
+                                null ||
+                            doctor.speciality.toLowerCase().contains(
+                                _specialties[_selectedSpecialtyIndex!]['name']!
+                                    .replaceAll('\n', ' ')
+                                    .toLowerCase());
+                        return matchesCategory;
+                      }).toList();
+                      if (doctors.isEmpty) {
+                        return const Center(child: Text('No doctors found'));
+                      }
+                      return ListView.builder(
+                          itemCount: doctors.length,
+                          itemBuilder: (context, index) => GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => DoctorDetailsScreen(
+                                          doctor: doctors[index]),
+                                    ),
+                                  );
+                                },
+                                child: Card(
+                                  child: ListTile(
+                                    leading: CircleAvatar(
+                                      backgroundImage:
+                                          NetworkImage(doctors[index].imageUrl),
+                                    ),
+                                    title: Text(doctors[index].name),
+                                    subtitle: Text(doctors[index].speciality),
+                                    trailing: ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                DoctorDetailsScreen(
+                                                    doctor: doctors[index]),
+                                          ),
+                                        );
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            const Color(0xFFB28CFF),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8.r),
+                                        ),
+                                      ),
+                                      child: const Text('Book'),
+                                    ),
+                                  ),
+                                ),
+                              ));
+                    } else if (state is DoctorError) {
+                      return Center(child: Text('Error: ${state.message}'));
+                    }
+                    return const SizedBox.shrink();
+                  },
                 ),
               ),
             ],

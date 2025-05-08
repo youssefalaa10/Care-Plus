@@ -7,7 +7,8 @@ import '../../../../Core/styles/image_manager.dart';
 import '../../../Auth/logic/auth_cubit.dart';
 
 class WelcomeSection extends StatelessWidget {
-  const WelcomeSection({super.key});
+  final void Function(String)? onSearchChanged;
+  const WelcomeSection({super.key, this.onSearchChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +37,6 @@ class WelcomeSection extends StatelessWidget {
               const HeaderSection(),
             ],
           ),
-          // const SizedBox(height: 10),
           const Text(
             "Let's find\nyour top doctor!",
             style: TextStyle(
@@ -53,6 +53,7 @@ class WelcomeSection extends StatelessWidget {
               borderRadius: BorderRadius.circular(15),
             ),
             child: TextField(
+              onChanged: onSearchChanged,
               decoration: InputDecoration(
                 hintText: 'Search health issue....',
                 hintStyle: TextStyle(color: Colors.grey[400]),
@@ -139,7 +140,8 @@ class HeaderSection extends StatelessWidget {
                 context.read<AuthCubit>().signOut();
 
                 // Close dialog
-                Navigator.pushNamedAndRemoveUntil(context, Routes.loginScreen, (route) => false);
+                Navigator.pushNamedAndRemoveUntil(
+                    context, Routes.loginScreen, (route) => false);
 
                 // Display logout message
                 ScaffoldMessenger.of(context).showSnackBar(

@@ -10,7 +10,7 @@ class DoctorStatsSection extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(18),
-      color: const Color(0xFFB28CFF), // Background color of the container
+      color: const Color(0xFFB28CFF), 
       ),
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Row(
@@ -34,7 +34,7 @@ class DoctorStatsSection extends StatelessWidget {
         horizontal: mq.width(3),
       ),
       decoration: BoxDecoration(
-        color: Colors.white, // White background for the cards
+        color: Colors.white, 
         borderRadius: BorderRadius.circular(15),
       ),
       child: Column(

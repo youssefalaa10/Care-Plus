@@ -21,12 +21,17 @@ class DoctorDetailsScreen extends StatefulWidget {
 }
 
 class _DoctorDetailsScreenState extends State<DoctorDetailsScreen> {
-  // Shared state for selected day index
   int selectedDayIndex = 0;
+  int selectedTimeIndex = -1; // Track selected time slot index
 
   @override
   Widget build(BuildContext context) {
     final mq = CustomMQ(context);
+    final selectedDaySchedule = widget.doctor.daySchedules[selectedDayIndex];
+    final selectedTimeSlot = (selectedTimeIndex == -1)
+        ? null
+        : selectedDaySchedule.availableHours[selectedTimeIndex];
+    final selectedDay = selectedDaySchedule.day;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -60,6 +65,7 @@ class _DoctorDetailsScreenState extends State<DoctorDetailsScreen> {
                 onDaySelected: (index) {
                   setState(() {
                     selectedDayIndex = index;
+                    selectedTimeIndex = -1; // Reset time slot when day changes
                   });
                 },
               ),
@@ -67,9 +73,19 @@ class _DoctorDetailsScreenState extends State<DoctorDetailsScreen> {
               VisitHourSection(
                 doctor: widget.doctor,
                 selectedDayIndex: selectedDayIndex,
+                selectedTimeIndex: selectedTimeIndex,
+                onTimeSelected: (index) {
+                  setState(() {
+                    selectedTimeIndex = index;
+                  });
+                },
               ),
               SizedBox(height: mq.height(4)),
-              BookingButton(doctor: widget.doctor),
+              BookingButton(
+                doctor: widget.doctor,
+                selectedDay: selectedTimeIndex == -1 ? null : selectedDay,
+                selectedTimeSlot: selectedTimeSlot,
+              ),
               SizedBox(height: mq.height(4)),
             ],
           ),
@@ -249,11 +265,15 @@ class _ScheduleSectionState extends State<ScheduleSection> {
 class VisitHourSection extends StatefulWidget {
   final DoctorModel doctor;
   final int selectedDayIndex;
+  final int selectedTimeIndex;
+  final Function(int) onTimeSelected;
 
   const VisitHourSection({
     super.key,
     required this.doctor,
     required this.selectedDayIndex,
+    required this.selectedTimeIndex,
+    required this.onTimeSelected,
   });
 
   @override
@@ -313,6 +333,8 @@ class _VisitHourSectionState extends State<VisitHourSection> {
                         setState(() {
                           selectedTimeIndex = index;
                         });
+                        widget.onTimeSelected(
+                            index); // Call the callback to update parent
                       },
                 child: Container(
                   padding: EdgeInsets.symmetric(
@@ -357,17 +379,18 @@ class _VisitHourSectionState extends State<VisitHourSection> {
 
 class BookingButton extends StatelessWidget {
   final DoctorModel doctor;
+  final String? selectedDay;
+  final TimeSlot? selectedTimeSlot;
 
-  const BookingButton({super.key, required this.doctor});
+  const BookingButton(
+      {super.key,
+      required this.doctor,
+      required this.selectedDay,
+      required this.selectedTimeSlot});
 
   @override
   Widget build(BuildContext context) {
     final mq = CustomMQ(context);
-    final visitHourState =
-        context.findAncestorStateOfType<_VisitHourSectionState>();
-    final selectedTimeSlot = visitHourState?.selectedTimeSlot;
-    final selectedDay = visitHourState?.selectedDay;
-
     return BlocListener<DoctorCubit, DoctorState>(
       listener: (context, state) {
         if (state is AppointmentBookingSuccess) {
@@ -397,19 +420,17 @@ class BookingButton extends StatelessWidget {
                   selectedTimeSlot == null ||
                   currentUser == null ||
                   isLoading;
-
               return SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: isDisabled
                       ? null
                       : () {
-                          // Book appointment directly
                           context.read<DoctorCubit>().bookAppointment(
                                 doctorId: doctor.id,
                                 userId: currentUser.uid,
-                                day: selectedDay,
-                                timeSlot: selectedTimeSlot,
+                                day: selectedDay!,
+                                timeSlot: selectedTimeSlot!,
                               );
                         },
                   style: ElevatedButton.styleFrom(

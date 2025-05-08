@@ -63,7 +63,11 @@ class AppRouter {
 
       // request doctor screen
       case Routes.requestDoctorScreen:
-        return MaterialPageRoute(builder: (_) => const RequestDoctorScreen());
+        return MaterialPageRoute(
+            builder: (_) => BlocProvider(
+                  create: (context) => getIt<DoctorCubit>(),
+                  child: const RequestDoctorScreen(),
+                ));
     }
     return null;
   }

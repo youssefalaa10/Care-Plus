@@ -19,12 +19,12 @@ class DoctorProfileSection extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius:
-                    BorderRadius.circular(16), // Set the corner radius to 8
+                    BorderRadius.circular(16), 
                 child: Container(
-                  width: mq.width(30), // Adjusted size for clarity
+                  width: mq.width(30), 
                   height: mq.width(30),
                   decoration: BoxDecoration(
-                    color: Colors.grey[200], // Fallback background color
+                    color: Colors.grey[200], 
                     image: DecorationImage(
                       image: NetworkImage(doctor.imageUrl),
                       fit: BoxFit.cover,
@@ -50,7 +50,7 @@ class DoctorProfileSection extends StatelessWidget {
           ),
           SizedBox(height: mq.height(2)),
           Text(
-            doctor.name ?? 'Doctor Name',
+            doctor.name,
             style: TextStyle(
               fontSize: mq.width(5),
               fontWeight: FontWeight.bold,

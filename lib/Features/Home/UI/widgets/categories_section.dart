@@ -4,49 +4,52 @@ import 'package:flutter/material.dart';
 import 'category_card.dart';
 
 class CategoriesSection extends StatelessWidget {
-  const CategoriesSection({super.key});
+  final void Function(String?)? onCategorySelected;
+  final String? selectedCategory;
+  const CategoriesSection(
+      {super.key, this.onCategorySelected, this.selectedCategory});
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.all(20),
+    return Padding(
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Categories',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 15),
+          const SizedBox(height: 15),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              CategoryCard(
-                icon: ImageManager.topDoctorIcon,
-                label: 'Top doctor',
-                // color: Colors.green,
-              ),
-              CategoryCard(
-                icon: ImageManager.cardiologyIcon,
-                label: 'Cardiology',
-                // color: Colors.red,
-              ),
-              CategoryCard(
-                icon: ImageManager.medicineIcon,
-                label: 'Medicine',
-                // color: Color(0xFF9370DB),
-              ),
-              CategoryCard(
-                icon: ImageManager.generalIcon,
-                label: 'General',
-                // color: Colors.orange,
-              ),
+              _buildCategoryCard('Top doctor', ImageManager.topDoctorIcon),
+              _buildCategoryCard('Cardiology', ImageManager.cardiologyIcon),
+              _buildCategoryCard('Medicine', ImageManager.medicineIcon),
+              _buildCategoryCard('General', ImageManager.generalIcon),
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryCard(String label, String icon) {
+    final isSelected = selectedCategory == label;
+    return GestureDetector(
+      onTap: () {
+        if (onCategorySelected != null) {
+          onCategorySelected!(isSelected ? null : label);
+        }
+      },
+      child: CategoryCard(
+        icon: icon,
+        label: label,
+        color: isSelected ? const Color(0xFF9370DB) : null,
       ),
     );
   }
