@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:carepulse/Features/Auth/Data/Repo/auth_repo.dart';
-import 'package:carepulse/Features/Auth/logic/auth_state.dart';
+import 'package:careplus/Features/Auth/Data/Repo/auth_repo.dart';
+import 'package:careplus/Features/Auth/logic/auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   final AuthRepo _authRepo;

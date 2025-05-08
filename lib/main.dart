@@ -1,4 +1,4 @@
-import 'package:carepulse/Core/Routing/routes.dart';
+import 'package:careplus/Core/Routing/routes.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,7 +9,7 @@ import 'Core/DI/dependency_injection.dart';
 import 'Core/Routing/app_router.dart';
 import 'Features/Auth/logic/auth_cubit.dart';
 import 'firebase_options.dart';
-// import 'Core/styles/app_theme.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +18,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // Initialize dependency injection
+
   setUpGetIt();
 
   await SystemChrome.setPreferredOrientations([
@@ -44,9 +44,9 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return MultiBlocProvider(
           providers: [
-        BlocProvider<AuthCubit>(
-          create: (context) => getIt<AuthCubit>(),
-        ),
+            BlocProvider<AuthCubit>(
+              create: (context) => getIt<AuthCubit>(),
+            ),
           ],
           child: MaterialApp(
             title: 'Care Plus',

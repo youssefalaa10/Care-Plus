@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:carepulse/Features/Auth/Data/Model/user_model.dart';
+import 'package:careplus/Features/Auth/Data/Model/user_model.dart';
 
 enum AuthStatus { initial, loading, authenticated, unauthenticated, error, registered }
 

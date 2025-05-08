@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:carepulse/Core/components/media_query.dart';
-import 'package:carepulse/Features/Top-Doctors/Data/Model/doctor_model.dart';
-import 'package:carepulse/Features/Top-Doctors/Data/sample_doctors_data.dart';
+import 'package:careplus/Core/components/media_query.dart';
+import 'package:careplus/Features/Top-Doctors/Data/Model/doctor_model.dart';
+import 'package:careplus/Features/Top-Doctors/Data/sample_doctors_data.dart';
 
 import 'doctor_card.dart';
 

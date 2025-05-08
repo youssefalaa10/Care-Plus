@@ -1,15 +1,16 @@
-import 'package:carepulse/Core/DI/dependency_injection.dart';
-import 'package:carepulse/Core/Routing/routes.dart';
-import 'package:carepulse/Features/Auth/UI/login/UI/login_screen.dart';
-import 'package:carepulse/Features/Auth/logic/auth_cubit.dart';
-import 'package:carepulse/Features/Home/UI/home_screen.dart';
-import 'package:carepulse/Features/Top-Doctors/Data/Model/doctor_model.dart';
+import 'package:careplus/Core/DI/dependency_injection.dart';
+import 'package:careplus/Core/Routing/routes.dart';
+import 'package:careplus/Features/Auth/UI/login/UI/login_screen.dart';
+import 'package:careplus/Features/Auth/logic/auth_cubit.dart';
+import 'package:careplus/Features/Home/UI/home_screen.dart';
+import 'package:careplus/Features/Top-Doctors/Data/Model/doctor_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../Features/Auth/UI/register/UI/register_screen.dart';
 import '../../Features/Doctor-Details/UI/doctor_details_screen.dart';
 import '../../Features/Layout/UI/layout_screen.dart';
+import '../../Features/Profile/UI/profile_screen.dart';
 import '../../Features/Request_Doctor/UI/request_doctor_screen.dart';
 import '../../Features/Schedule/schedule_screen.dart';
 import '../../Features/Top-Doctors/Logic/doctor_cubit.dart';
@@ -36,7 +37,16 @@ class AppRouter {
 
       // main layout
       case Routes.mainLayout:
-        return MaterialPageRoute(builder: (_) => const MainLayout());
+        return MaterialPageRoute(builder: (_) => MultiBlocProvider(
+           providers: [
+            BlocProvider<AuthCubit>(
+              create: (context) => getIt<AuthCubit>(),
+            ),
+            BlocProvider<DoctorCubit>(
+              create: (context) => getIt<DoctorCubit>(),
+            ),
+          ],
+          child: const MainLayout()));
 
       // home screen
       case Routes.doctorFinderScreen:
@@ -55,7 +65,10 @@ class AppRouter {
       case Routes.doctorDetailsScreen:
         final doctor = settings.arguments as DoctorModel;
         return MaterialPageRoute(
-            builder: (_) => DoctorDetailsScreen(doctor: doctor));
+            builder: (_) => BlocProvider(
+                  create: (context) => getIt<DoctorCubit>(),
+                  child: DoctorDetailsScreen(doctor: doctor),
+                ));
 
       // schedule screen
       case Routes.scheduleScreen:
@@ -67,6 +80,14 @@ class AppRouter {
             builder: (_) => BlocProvider(
                   create: (context) => getIt<DoctorCubit>(),
                   child: const RequestDoctorScreen(),
+                ));
+
+      // profile screen
+      case Routes.profileScreen:
+        return MaterialPageRoute(
+            builder: (_) => BlocProvider(
+                  create: (context) => getIt<AuthCubit>(),
+                  child: const ProfileScreen(),
                 ));
     }
     return null;

@@ -1,4 +1,4 @@
-import 'package:carepulse/Core/styles/image_manager.dart';
+import 'package:careplus/Core/styles/image_manager.dart';
 import 'package:flutter/material.dart';
 
 import 'category_card.dart';

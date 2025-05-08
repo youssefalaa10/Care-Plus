@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:carepulse/Features/Top-Doctors/Data/Model/doctor_model.dart';
+import 'package:careplus/Features/Top-Doctors/Data/Model/doctor_model.dart';
 
 class DoctorRepo {
   final FirebaseFirestore _firestore;

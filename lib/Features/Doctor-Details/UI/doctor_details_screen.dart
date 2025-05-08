@@ -7,7 +7,6 @@ import '../../../Features/Top-Doctors/Logic/doctor_cubit.dart';
 import '../../../Features/Auth/Data/Model/user_model.dart';
 import '../../../Features/Auth/logic/auth_cubit.dart';
 import '../../../Features/Auth/logic/auth_state.dart';
-// Book appointment screen removed - booking now handled directly in this screen
 import 'widgets/doctor_profile_section.dart';
 import 'widgets/doctor_stats_section.dart';
 

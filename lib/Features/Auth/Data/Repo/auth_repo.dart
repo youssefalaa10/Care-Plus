@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:carepulse/Features/Auth/Data/Model/user_model.dart';
+import 'package:careplus/Features/Auth/Data/Model/user_model.dart';
 
 class AuthRepo {
   final FirebaseAuth _firebaseAuth;

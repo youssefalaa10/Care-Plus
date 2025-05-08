@@ -70,6 +70,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '427882411809',
     projectId: 'careplus-1c9a7',
     storageBucket: 'careplus-1c9a7.firebasestorage.app',
-    iosBundleId: 'com.example.carepulse',
+    iosBundleId: 'com.example.careplus',
   );
 }

@@ -1,4 +1,4 @@
-import 'package:carepulse/Core/styles/image_manager.dart';
+import 'package:careplus/Core/styles/image_manager.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../Core/components/media_query.dart';
@@ -18,13 +18,12 @@ class DoctorProfileSection extends StatelessWidget {
           Stack(
             children: [
               ClipRRect(
-                borderRadius:
-                    BorderRadius.circular(16), 
+                borderRadius: BorderRadius.circular(16),
                 child: Container(
-                  width: mq.width(30), 
+                  width: mq.width(30),
                   height: mq.width(30),
                   decoration: BoxDecoration(
-                    color: Colors.grey[200], 
+                    color: Colors.grey[200],
                     image: DecorationImage(
                       image: NetworkImage(doctor.imageUrl),
                       fit: BoxFit.cover,

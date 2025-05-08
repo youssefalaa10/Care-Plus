@@ -1,4 +1,4 @@
-import 'package:carepulse/Core/Routing/routes.dart';
+import 'package:careplus/Core/Routing/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,7 +9,7 @@ import '../Top-Doctors/Data/Model/doctor_model.dart';
 import '../Auth/logic/auth_cubit.dart';
 import '../Auth/logic/auth_state.dart';
 
-// Extension to capitalize first letter of a string
+
 extension StringExtension on String {
   String capitalize() {
     return isEmpty ? this : '${this[0].toUpperCase()}${substring(1)}';
@@ -42,7 +42,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       DoctorRepo().getUserAppointments(userId).listen((appointments) {
         setState(() {
           _appointments =
-              appointments; // No need to cast, using the correct type now
+              appointments; 
           _isLoading = false;
         });
       });
@@ -153,162 +153,6 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     );
   }
 
-  Widget _buildAppointmentCard({
-    required String doctorName,
-    required String specialty,
-    required String date,
-    required String time,
-    required bool isConfirmed,
-    required Color avatarColor,
-    required String avatarAsset,
-    required CustomMQ mq,
-  }) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(mq.width(4)),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(mq.width(4)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.1),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: mq.width(12),
-                height: mq.width(12),
-                decoration: BoxDecoration(
-                  color: avatarColor,
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Image.asset(
-                    avatarAsset,
-                    width: mq.width(8),
-                    height: mq.width(8),
-                    errorBuilder: (context, error, stackTrace) {
-                      return Icon(
-                        Icons.person,
-                        size: mq.width(6),
-                        color: Colors.white,
-                      );
-                    },
-                  ),
-                ),
-              ),
-              SizedBox(width: mq.width(3)),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      doctorName,
-                      style: TextStyle(
-                        fontSize: mq.width(4),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: mq.height(0.5)),
-                    Text(
-                      specialty,
-                      style: TextStyle(
-                        fontSize: mq.width(3.5),
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: mq.height(2)),
-          Row(
-            children: [
-              _buildInfoItem(
-                icon: Icons.calendar_today,
-                text: date,
-                mq: mq,
-              ),
-              SizedBox(width: mq.width(5)),
-              _buildInfoItem(
-                icon: Icons.access_time,
-                text: time,
-                mq: mq,
-              ),
-              const Spacer(),
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: mq.width(2),
-                  vertical: mq.height(0.5),
-                ),
-                decoration: BoxDecoration(
-                  color: isConfirmed
-                      ? Colors.green.withValues(alpha: 0.1)
-                      : Colors.orange.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(mq.width(1)),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      isConfirmed ? Icons.check_circle : Icons.pending,
-                      color: isConfirmed ? Colors.green : Colors.orange,
-                      size: mq.width(3),
-                    ),
-                    SizedBox(width: mq.width(1)),
-                    Text(
-                      isConfirmed ? 'Confirmed' : 'Pending',
-                      style: TextStyle(
-                        fontSize: mq.width(3),
-                        color: isConfirmed ? Colors.green : Colors.orange,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: mq.height(2)),
-          Row(
-            children: [
-              Expanded(
-                child: CustomButton(
-                  text: 'Cancel',
-                  onPressed: () {},
-                  backgroundColor: Colors.white,
-                  textColor: Colors.black87,
-                  borderRadius: mq.width(2),
-                  verticalPadding: mq.height(1.5),
-                  fontSize: mq.width(3.5),
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              SizedBox(width: mq.width(3)),
-              Expanded(
-                child: CustomButton(
-                  text: 'Confirm',
-                  onPressed: () {},
-                  backgroundColor: const Color(0xFFB28CFF),
-                  borderRadius: mq.width(2),
-                  verticalPadding: mq.height(1.5),
-                  fontSize: mq.width(3.5),
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildInfoItem({
     required IconData icon,
@@ -493,7 +337,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Doctor ID: ${appt.doctorId}', // TODO: Replace with doctor name lookup
+                      'Doctor ID: ${appt.doctorId}', 
                       style: TextStyle(
                         fontSize: mq.width(4),
                         fontWeight: FontWeight.bold,
@@ -597,7 +441,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   }
 
   void _confirmAppointment(Appointment appt) async {
-    // Update appointment status in Firestore
+    
     try {
       await FirebaseFirestore.instance
           .collection('appointments')
@@ -605,7 +449,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           .update({
         'status': 'confirmed',
       });
-      // No need to refresh as we're using a stream listener in _fetchAppointments
+      
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error confirming appointment: $e')),
@@ -621,7 +465,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           .update({
         'status': 'cancelled',
       });
-      // No need to refresh as we're using a stream listener in _fetchAppointments
+      
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error canceling appointment: $e')),

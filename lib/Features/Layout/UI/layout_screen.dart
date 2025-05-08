@@ -1,6 +1,6 @@
-import 'package:carepulse/Core/DI/dependency_injection.dart';
-import 'package:carepulse/Core/styles/image_manager.dart';
-import 'package:carepulse/Features/Auth/logic/auth_cubit.dart';
+import 'package:careplus/Core/DI/dependency_injection.dart';
+import 'package:careplus/Core/styles/image_manager.dart';
+import 'package:careplus/Features/Auth/logic/auth_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -8,9 +8,9 @@ import '../../../Core/Routing/routes.dart';
 import '../../../Core/styles/color_manager.dart';
 import '../../../Core/styles/icon_broken.dart';
 import '../../Home/UI/home_screen.dart';
+import '../../Profile/UI/profile_screen.dart';
 import '../../Schedule/schedule_screen.dart';
 import '../../Top-Doctors/Logic/doctor_cubit.dart';
-import '../../Top-Doctors/UI/top_doctors_screen.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
@@ -35,12 +35,9 @@ class MainLayoutState extends State<MainLayout> {
       create: (context) => getIt<DoctorCubit>(),
       child: ScheduleScreen(),
     ),
-    MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => getIt<DoctorCubit>()),
-        BlocProvider(create: (context) => getIt<AuthCubit>()),
-      ],
-      child: TopDoctors(),
+    BlocProvider(
+      create: (context) => getIt<AuthCubit>(),
+      child: ProfileScreen(),
     ),
   ];
 
@@ -79,7 +76,7 @@ class MainLayoutState extends State<MainLayout> {
                 children: [
                   _buildNavItem(IconBroken.home, 0),
                   _buildNavItem(IconBroken.calendar, 1),
-                  _buildNavItemWithBadge(IconBroken.chat, 2, "2"),
+                  _buildNavItem(IconBroken.profile, 2),
                   _buildAddButton(),
                 ],
               ),
@@ -126,53 +123,53 @@ class MainLayoutState extends State<MainLayout> {
     );
   }
 
-  Widget _buildNavItemWithBadge(IconData icon, int index, String badgeText) {
-    final isSelected = _currentIndex == index;
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _currentIndex = index;
-        });
-      },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Stack(
-            alignment: Alignment.center,
-            clipBehavior: Clip.none,
-            children: [
-              Icon(
-                icon,
-                color: isSelected ? ColorManager.primaryColor : Colors.grey,
-                size: 28,
-              ),
-              Positioned(
-                top: -6,
-                right: -6,
-                child: CircleAvatar(
-                  radius: 8,
-                  backgroundColor: ColorManager.primaryColor,
-                  child: Text(
-                    badgeText,
-                    style: const TextStyle(fontSize: 10, color: Colors.white),
-                  ),
-                ),
-              ),
-              if (isSelected)
-                Positioned(
-                  bottom: -8,
-                  child: Image.asset(
-                    ImageManager.dotIcon,
-                    height: 8,
-                    width: 8,
-                  ),
-                ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildNavItemWithBadge(IconData icon, int index, String badgeText) {
+  //   final isSelected = _currentIndex == index;
+  //   return GestureDetector(
+  //     onTap: () {
+  //       setState(() {
+  //         _currentIndex = index;
+  //       });
+  //     },
+  //     child: Column(
+  //       mainAxisSize: MainAxisSize.min,
+  //       children: [
+  //         Stack(
+  //           alignment: Alignment.center,
+  //           clipBehavior: Clip.none,
+  //           children: [
+  //             Icon(
+  //               icon,
+  //               color: isSelected ? ColorManager.primaryColor : Colors.grey,
+  //               size: 28,
+  //             ),
+  //             Positioned(
+  //               top: -6,
+  //               right: -6,
+  //               child: CircleAvatar(
+  //                 radius: 8,
+  //                 backgroundColor: ColorManager.primaryColor,
+  //                 child: Text(
+  //                   badgeText,
+  //                   style: const TextStyle(fontSize: 10, color: Colors.white),
+  //                 ),
+  //               ),
+  //             ),
+  //             if (isSelected)
+  //               Positioned(
+  //                 bottom: -8,
+  //                 child: Image.asset(
+  //                   ImageManager.dotIcon,
+  //                   height: 8,
+  //                   width: 8,
+  //                 ),
+  //               ),
+  //           ],
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildAddButton() {
     return GestureDetector(

@@ -1,9 +1,9 @@
-import 'package:carepulse/Core/Routing/routes.dart';
-import 'package:carepulse/Core/styles/color_manager.dart';
-import 'package:carepulse/Features/Auth/logic/auth_cubit.dart';
-import 'package:carepulse/Features/Doctor-Details/UI/doctor_details_screen.dart';
-import 'package:carepulse/Features/Top-Doctors/UI/top_doctors_screen.dart';
-import 'package:carepulse/Features/Top-Doctors/Data/Model/doctor_model.dart';
+import 'package:careplus/Core/Routing/routes.dart';
+import 'package:careplus/Core/styles/color_manager.dart';
+import 'package:careplus/Features/Auth/logic/auth_cubit.dart';
+import 'package:careplus/Features/Doctor-Details/UI/doctor_details_screen.dart';
+import 'package:careplus/Features/Top-Doctors/UI/top_doctors_screen.dart';
+import 'package:careplus/Features/Top-Doctors/Data/Model/doctor_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

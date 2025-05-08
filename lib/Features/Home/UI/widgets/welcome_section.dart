@@ -1,9 +1,8 @@
-import 'package:carepulse/Core/Routing/routes.dart';
+import 'package:careplus/Core/Routing/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../Core/components/media_query.dart';
 import '../../../../Core/styles/icon_broken.dart';
-import '../../../../Core/styles/image_manager.dart';
 import '../../../Auth/logic/auth_cubit.dart';
 
 class WelcomeSection extends StatelessWidget {
@@ -55,7 +54,7 @@ class WelcomeSection extends StatelessWidget {
             child: TextField(
               onChanged: onSearchChanged,
               decoration: InputDecoration(
-                hintText: 'Search health issue....',
+                hintText: 'Search for Doctor....',
                 hintStyle: TextStyle(color: Colors.grey[400]),
                 border: InputBorder.none,
                 icon: const Icon(IconBroken.search,
@@ -79,18 +78,23 @@ class HeaderSection extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        // Profile Icon with Dropdown
         PopupMenuButton<String>(
           offset: Offset(0, mq.height(5)),
-          icon: CircleAvatar(
-            radius: mq.width(5),
-            backgroundImage: AssetImage(ImageManager.doctor1),
-            backgroundColor: Colors.grey[300],
-          ),
+          icon: Container(
+              height: mq.height(4),
+              width: mq.height(4),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.grey[300],
+              ),
+              child: Icon(IconBroken.profile,
+                  size: mq.width(6), color: Colors.white)),
           onSelected: (value) {
             if (value == 'logout') {
-              // Handle logout action
               _handleLogout(context);
+            }
+            if (value == 'settings') {
+              Navigator.pushNamed(context, Routes.profileScreen);
             }
           },
           itemBuilder: (BuildContext context) => [
@@ -121,7 +125,6 @@ class HeaderSection extends StatelessWidget {
   }
 
   void _handleLogout(BuildContext context) {
-    // Show confirmation dialog
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -135,21 +138,14 @@ class HeaderSection extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                // Implement actual logout logic here
-                // For example:
                 context.read<AuthCubit>().signOut();
 
-                // Close dialog
                 Navigator.pushNamedAndRemoveUntil(
                     context, Routes.loginScreen, (route) => false);
 
-                // Display logout message
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Logged out successfully')),
                 );
-
-                // Navigate to login screen
-                // Navigator.pushReplacementNamed(context, Routes.loginScreen);
               },
               child: const Text('Logout', style: TextStyle(color: Colors.red)),
             ),

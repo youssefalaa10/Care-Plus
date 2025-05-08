@@ -1,4 +1,4 @@
-import 'package:carepulse/Features/Top-Doctors/Data/Model/doctor_model.dart';
+import 'package:careplus/Features/Top-Doctors/Data/Model/doctor_model.dart';
 
 // Sample data for testing the doctor model and UI
 final List<DoctorModel> sampleDoctors = [

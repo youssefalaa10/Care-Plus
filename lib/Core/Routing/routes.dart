@@ -7,4 +7,5 @@ class Routes {
   static const String doctorDetailsScreen = '/doctor_details_screen';
   static const String scheduleScreen = '/schedule_screen';
   static const String requestDoctorScreen = '/request_doctor_screen';
+  static const String profileScreen = '/profile_screen';
 }

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:carepulse/Core/components/custom_text_form_field.dart';
-import 'package:carepulse/Features/Auth/logic/auth_cubit.dart';
-import 'package:carepulse/Features/Auth/logic/auth_state.dart';
-import 'package:carepulse/Core/DI/dependency_injection.dart';
-import 'package:carepulse/Core/Routing/routes.dart';
+import 'package:careplus/Core/components/custom_text_form_field.dart';
+import 'package:careplus/Features/Auth/logic/auth_cubit.dart';
+import 'package:careplus/Features/Auth/logic/auth_state.dart';
+import 'package:careplus/Core/DI/dependency_injection.dart';
+import 'package:careplus/Core/Routing/routes.dart';
 
 import '../../../../../Core/components/custom_button.dart';
 
@@ -34,14 +34,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
   String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter your email or phone number';
+      return 'Please enter your email';
     }
 
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    final phoneRegex = RegExp(r'^\d{10,}$');
 
-    if (!emailRegex.hasMatch(value) && !phoneRegex.hasMatch(value)) {
-      return 'Please enter a valid email or phone number';
+    if (!emailRegex.hasMatch(value)) {
+      return 'Please enter a valid email';
     }
     return null;
   }
@@ -82,7 +81,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Login successful')),
             );
-            // Navigate to home screen or dashboard
             Navigator.pushReplacementNamed(context, Routes.mainLayout);
           }
         },
@@ -149,7 +147,7 @@ class _LoginScreenState extends State<LoginScreen> {
           keyboardType: TextInputType.emailAddress,
           validator: _validateEmail,
           label: 'Email',
-          hintText: 'Enter your email or phone number',
+          hintText: 'Enter your email',
           borderColor: Colors.grey.shade300,
           focusedBorderColor: Colors.blue.shade300,
           errorBorderColor: Colors.red.shade300,
@@ -178,44 +176,28 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         SizedBox(height: 8.h),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                SizedBox(
-                  height: 24.h,
-                  width: 24.w,
-                  child: Checkbox(
-                    value: _rememberMe,
-                    onChanged: (value) {
-                      setState(() {
-                        _rememberMe = value ?? false;
-                      });
-                    },
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                  ),
+            SizedBox(
+              height: 24.h,
+              width: 24.w,
+              child: Checkbox(
+                value: _rememberMe,
+                onChanged: (value) {
+                  setState(() {
+                    _rememberMe = value ?? false;
+                  });
+                },
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.r),
                 ),
-                SizedBox(width: 8.w),
-                Text(
-                  'Remember me',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    color: Colors.black87,
-                  ),
-                ),
-              ],
+              ),
             ),
-            TextButton(
-              onPressed: () {},
-              child: Text(
-                'Forgot password?',
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: Colors.blue,
-                  fontWeight: FontWeight.w500,
-                ),
+            SizedBox(width: 8.w),
+            Text(
+              'Remember me',
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: Colors.black87,
               ),
             ),
           ],

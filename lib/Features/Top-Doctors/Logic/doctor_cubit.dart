@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:carepulse/Features/Top-Doctors/Data/Model/doctor_model.dart';
-import 'package:carepulse/Features/Top-Doctors/Data/Repo/doctor_repo.dart';
+import 'package:careplus/Features/Top-Doctors/Data/Model/doctor_model.dart';
+import 'package:careplus/Features/Top-Doctors/Data/Repo/doctor_repo.dart';
 
 part 'doctor_state.dart';
 
