@@ -254,20 +254,20 @@ class DoctorCard extends StatelessWidget {
           ),
         ),
         SizedBox(width: mq.width(2)),
-        Container(
-          padding: EdgeInsets.all(mq.width(1.5)),
-          decoration: BoxDecoration(
-            color: const Color(0xFFF7F8F8),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Image.asset(
-            ImageManager.messageIcon,
-            width: mq.width(4),
-            height: mq.width(4),
-          ),
-        ),
-        SizedBox(width: mq.width(2)),
-        _buildIconButton(Icons.favorite_border),
+        // Container(
+        //   padding: EdgeInsets.all(mq.width(1.5)),
+        //   decoration: BoxDecoration(
+        //     color: const Color(0xFFF7F8F8),
+        //     borderRadius: BorderRadius.circular(8),
+        //   ),
+        //   child: Image.asset(
+        //     ImageManager.messageIcon,
+        //     width: mq.width(4),
+        //     height: mq.width(4),
+        //   ),
+        // ),
+        // SizedBox(width: mq.width(2)),
+        _buildIconButton(Icons.location_on_outlined, doctor.location),
       ],
     );
   }
@@ -293,20 +293,31 @@ class DoctorCard extends StatelessWidget {
     );
   }
 
-  Widget _buildIconButton(IconData icon) {
+  Widget _buildIconButton(IconData icon, String? label) {
     return Container(
       padding: EdgeInsets.all(mq.width(1.5)),
       decoration: BoxDecoration(
         color: const Color(0xFFF7F8F8), // Fixed color for all icon buttons
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Icon(
-        icon,
-        size: mq.width(4),
-        color: Colors.black87, // Icon color
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            size: mq.width(4),
+            color: Colors.black87, // Icon color
+          ),
+          SizedBox(width: mq.width(1)),
+          Text(
+            label ?? '',
+            style: TextStyle(
+              fontSize: mq.width(3),
+              fontWeight: FontWeight.w500,
+              color: Colors.black87, // Text color
+            ),
+          ),
+        ],
       ),
     );
   }
 }
-
-

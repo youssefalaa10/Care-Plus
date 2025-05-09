@@ -130,7 +130,6 @@ class _DoctorFinderScreenState extends State<DoctorFinderScreen> {
                         ),
                       );
                     } else {
-                      // If no state is available yet, show loading
                       return const Center(child: CircularProgressIndicator());
                     }
                   },
@@ -159,7 +158,6 @@ class HeaderSection extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Settings Icon with Dropdown
           PopupMenuButton<String>(
             icon: Container(
               padding: EdgeInsets.all(mq.width(1)),
@@ -175,7 +173,6 @@ class HeaderSection extends StatelessWidget {
             ),
             onSelected: (value) {
               if (value == 'logout') {
-                // Handle logout action
                 _handleLogout(context);
               }
             },
@@ -213,7 +210,6 @@ class HeaderSection extends StatelessWidget {
   }
 
   void _handleLogout(BuildContext context) {
-    // Show confirmation dialog
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -227,18 +223,14 @@ class HeaderSection extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                // Implement actual logout logic
                 context.read<AuthCubit>().signOut();
 
-                // Close dialog
                 Navigator.of(context).pop();
 
-                // Display logout message
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Logged out successfully')),
                 );
 
-                // Navigate to login screen
                 Navigator.pushReplacementNamed(context, Routes.loginScreen);
               },
               child: const Text('Logout', style: TextStyle(color: Colors.red)),
