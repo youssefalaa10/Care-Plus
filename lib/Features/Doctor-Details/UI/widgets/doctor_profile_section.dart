@@ -2,6 +2,7 @@ import 'package:careplus/Core/styles/image_manager.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../Core/components/media_query.dart';
+import '../../../../Core/styles/color_manager.dart';
 import '../../../../Features/Top-Doctors/Data/Model/doctor_model.dart';
 
 class DoctorProfileSection extends StatelessWidget {
@@ -23,7 +24,7 @@ class DoctorProfileSection extends StatelessWidget {
                   width: mq.width(30),
                   height: mq.width(30),
                   decoration: BoxDecoration(
-                    color: Colors.grey[200],
+                    color: ColorManager.grey200,
                     image: DecorationImage(
                       image: NetworkImage(doctor.imageUrl),
                       fit: BoxFit.cover,
@@ -40,7 +41,7 @@ class DoctorProfileSection extends StatelessWidget {
                   width: mq.width(4),
                   height: mq.width(4),
                   decoration: const BoxDecoration(
-                    color: Colors.green,
+                    color: ColorManager.green,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -57,7 +58,7 @@ class DoctorProfileSection extends StatelessWidget {
           ),
           SizedBox(height: mq.height(1)),
           Text(
-            'Cardio Specialist',
+            doctor.speciality,
             style: TextStyle(
               fontSize: mq.width(4),
               color: Colors.grey,

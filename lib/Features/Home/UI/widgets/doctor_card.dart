@@ -1,3 +1,4 @@
+import 'package:careplus/Core/styles/color_manager.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../Core/components/media_query.dart';
@@ -20,11 +21,11 @@ final CustomMQ mq;
     return Container(
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: ColorManager.white,
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             spreadRadius: 1,
             blurRadius: 5,
             offset: const Offset(0, 3),
@@ -44,7 +45,7 @@ final CustomMQ mq;
                 return Container(
                   width: mq.width(20),
                   height: mq.width(20),
-                  color: Colors.grey[200],
+                  color: ColorManager.grey200,
                   child: const Icon(Icons.person, size: 50),
                 );
               },
@@ -57,9 +58,9 @@ final CustomMQ mq;
                     width: 12,
                     height: 12,
                     decoration: BoxDecoration(
-                      color: Colors.green,
+                      color: ColorManager.green,
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2),
+                      border: Border.all(color: ColorManager.white, width: 2),
                     ),
                   ),
                 ),

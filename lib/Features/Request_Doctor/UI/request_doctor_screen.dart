@@ -162,7 +162,7 @@ class _RequestDoctorScreenState extends State<RequestDoctorScreen> {
                                           doctors[index].imageUrl,
                                         ),
                                         onBackgroundImageError: (_, __) {},
-                                        backgroundColor: Colors.grey[200],
+                                        backgroundColor: ColorManager.grey200,
                                         child: doctors[index].imageUrl.isEmpty
                                             ? Icon(Icons.person, size: 30.sp)
                                             : null,
@@ -227,7 +227,7 @@ class _RequestDoctorScreenState extends State<RequestDoctorScreen> {
                                           'Book',
                                           style: TextStyle(
                                               fontSize: 14.sp,
-                                              color: Colors.white),
+                                              color: ColorManager.white),
                                         ),
                                       ),
                                       isThreeLine: true,

@@ -9,8 +9,9 @@ class Appointment extends Equatable {
   final TimeSlot timeSlot;
   final DateTime bookingDate;
   final String status;
+  String? doctorName;
 
-  const Appointment({
+  Appointment({
     required this.id,
     required this.doctorId,
     required this.userId,
@@ -18,6 +19,7 @@ class Appointment extends Equatable {
     required this.timeSlot,
     required this.bookingDate,
     this.status = 'scheduled',
+    this.doctorName,
   });
 
   factory Appointment.fromJson(Map<String, dynamic> json) {
@@ -29,6 +31,7 @@ class Appointment extends Equatable {
       timeSlot: TimeSlot.fromJson(json['timeSlot'] as Map<String, dynamic>),
       bookingDate: (json['bookingDate'] as Timestamp).toDate(),
       status: json['status'] as String? ?? 'scheduled',
+      doctorName: json['doctorName'] as String?,
     );
   }
 
@@ -49,6 +52,7 @@ class Appointment extends Equatable {
       'timeSlot': timeSlot.toJson(),
       'bookingDate': bookingDate,
       'status': status,
+      'doctorName': doctorName,
     };
   }
 
@@ -60,6 +64,7 @@ class Appointment extends Equatable {
     TimeSlot? timeSlot,
     DateTime? bookingDate,
     String? status,
+    String? doctorName,
   }) {
     return Appointment(
       id: id ?? this.id,
@@ -69,12 +74,17 @@ class Appointment extends Equatable {
       timeSlot: timeSlot ?? this.timeSlot,
       bookingDate: bookingDate ?? this.bookingDate,
       status: status ?? this.status,
+      doctorName: doctorName ?? this.doctorName,
     );
+  }
+
+  void setDoctorName(String name) {
+    doctorName = name;
   }
 
   @override
   List<Object?> get props =>
-      [id, doctorId, userId, day, timeSlot, bookingDate, status];
+      [id, doctorId, userId, day, timeSlot, bookingDate, status, doctorName];
 }
 
 class TimeSlot extends Equatable {

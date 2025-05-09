@@ -31,8 +31,11 @@ class MainLayoutState extends State<MainLayout> {
       ],
       child: DoctorFinderScreen(),
     ),
-    BlocProvider(
-      create: (context) => getIt<DoctorCubit>(),
+     MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => getIt<DoctorCubit>()),
+        BlocProvider(create: (context) => getIt<AuthCubit>()),
+      ],
       child: ScheduleScreen(),
     ),
     BlocProvider(

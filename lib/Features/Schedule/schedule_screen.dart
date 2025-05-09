@@ -9,7 +9,6 @@ import '../Top-Doctors/Data/Model/doctor_model.dart';
 import '../Auth/logic/auth_cubit.dart';
 import '../Auth/logic/auth_state.dart';
 
-
 extension StringExtension on String {
   String capitalize() {
     return isEmpty ? this : '${this[0].toUpperCase()}${substring(1)}';
@@ -28,23 +27,75 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   final List<String> _tabs = ['Upcoming', 'Completed', 'Canceled'];
   List<Appointment> _appointments = [];
   bool _isLoading = true;
+
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _fetchAppointments();
   }
 
   void _fetchAppointments() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     final authState = context.read<AuthCubit>().state;
     if (authState.status == AuthStatus.authenticated &&
         authState.user != null) {
       final userId = authState.user!.uid;
-      DoctorRepo().getUserAppointments(userId).listen((appointments) {
-        setState(() {
-          _appointments =
-              appointments; 
-          _isLoading = false;
-        });
+      DoctorRepo().getUserAppointments(userId).listen((appointments) async {
+        try {
+          // Only fetch doctor data if we have appointments
+          if (appointments.isNotEmpty) {
+            // Fetch doctor names for each appointment
+            final doctorIds =
+                appointments.map((a) => a.doctorId).toSet().toList();
+
+            // Handle case where doctorIds might be empty
+            if (doctorIds.isNotEmpty) {
+              final doctorsSnapshot = await FirebaseFirestore.instance
+                  .collection('doctors')
+                  .where('id', whereIn: doctorIds)
+                  .get();
+
+              final doctorMap = {
+                for (var doc in doctorsSnapshot.docs)
+                  doc['id'] as String: doc['name'] as String? ?? 'Unknown'
+              };
+
+              // Update each appointment with the doctor name
+              for (var i = 0; i < appointments.length; i++) {
+                final appt = appointments[i];
+                if (doctorMap.containsKey(appt.doctorId)) {
+                  appointments[i] = appointments[i]
+                      .copyWith(doctorName: doctorMap[appt.doctorId]);
+                }
+              }
+            }
+          }
+
+          if (mounted) {
+            setState(() {
+              _appointments = appointments;
+              _isLoading = false;
+            });
+          }
+        } catch (e) {
+          print('Error fetching doctor data: $e');
+          if (mounted) {
+            setState(() {
+              _appointments = appointments;
+              _isLoading = false;
+            });
+          }
+        }
+      }, onError: (error) {
+        print('Error fetching appointments: $error');
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
       });
     } else {
       setState(() {
@@ -153,7 +204,6 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     );
   }
 
-
   Widget _buildInfoItem({
     required IconData icon,
     required String text,
@@ -179,6 +229,20 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   }
 
   Widget _buildAppointmentsList(CustomMQ mq) {
+    // Show loading indicator while fetching data
+    if (_isLoading) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(color: Color(0xFFB28CFF)),
+            SizedBox(height: 16),
+            Text('Loading appointments...'),
+          ],
+        ),
+      );
+    }
+
     List<Appointment> list;
     if (_selectedTabIndex == 0) {
       list = _upcomingAppointments;
@@ -287,8 +351,6 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   Widget _buildAppointmentCardFromModel(Appointment appt, CustomMQ mq) {
     final bool isConfirmed =
         appt.status == 'confirmed' || appt.status == 'completed';
-    final bool isPending =
-        appt.status == 'scheduled' || appt.status == 'pending';
     final bool isCanceled =
         appt.status == 'cancelled' || appt.status == 'canceled';
 
@@ -337,11 +399,15 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Doctor ID: ${appt.doctorId}', 
+                      appt.doctorName != null && appt.doctorName!.isNotEmpty
+                          ? 'Dr. ${appt.doctorName}'
+                          : 'Doctor ID: ${appt.doctorId.substring(0, 6)}...',
                       style: TextStyle(
                         fontSize: mq.width(4),
                         fontWeight: FontWeight.bold,
                       ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
                     SizedBox(height: mq.height(0.5)),
                     Text(
@@ -441,15 +507,13 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   }
 
   void _confirmAppointment(Appointment appt) async {
-    
     try {
       await FirebaseFirestore.instance
           .collection('appointments')
           .doc(appt.id)
           .update({
-        'status': 'confirmed',
+        'status': 'completed',
       });
-      
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error confirming appointment: $e')),
@@ -465,7 +529,6 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           .update({
         'status': 'cancelled',
       });
-      
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error canceling appointment: $e')),
