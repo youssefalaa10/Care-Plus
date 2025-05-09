@@ -1,15 +1,36 @@
-# careplus
+# 🩺 CarePlus
 
-A new Flutter project.
+**CarePlus** is a mobile healthcare application built with Flutter that enables patients to easily find and book appointments with doctors. The app supports real-time doctor search by name or category, booking management, and viewing detailed doctor profiles including experience, rating count, and biography.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## 📱 Features
 
-A few resources to get you started if this is your first Flutter project:
+- 🔍 **Search Doctors** by name or medical category.
+- 📅 **Book Appointments** with available doctors.
+- ✅ **Manage Appointments**: Confirm or cancel your bookings.
+- 🧑‍⚕️ **Doctor Profiles**: View doctor details such as:
+  - Years of experience  
+  - Number of ratings  
+  - About/Bio section
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Flutter SDK `^3.5.1`
+- Dart-enabled IDE (e.g., VS Code, Android Studio)
+- Firebase project (for `firebase_auth` and `cloud_firestore`)
+
+### Install dependencies
+
+- flutter pub get
+
+### Run the app
+
+- flutter run
 
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
