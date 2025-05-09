@@ -24,14 +24,8 @@ class MainLayoutState extends State<MainLayout> {
 
   // Screen widgets
   final List<Widget> _screens = [
+    DoctorFinderScreen(),
     MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => getIt<DoctorCubit>()),
-        BlocProvider(create: (context) => getIt<AuthCubit>()),
-      ],
-      child: DoctorFinderScreen(),
-    ),
-     MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => getIt<DoctorCubit>()),
         BlocProvider(create: (context) => getIt<AuthCubit>()),

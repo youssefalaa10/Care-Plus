@@ -81,7 +81,6 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             });
           }
         } catch (e) {
-          print('Error fetching doctor data: $e');
           if (mounted) {
             setState(() {
               _appointments = appointments;
@@ -90,7 +89,6 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           }
         }
       }, onError: (error) {
-        print('Error fetching appointments: $error');
         if (mounted) {
           setState(() {
             _isLoading = false;
@@ -366,7 +364,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         borderRadius: BorderRadius.circular(mq.width(4)),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             spreadRadius: 1,
             blurRadius: 5,
             offset: const Offset(0, 2),
@@ -443,7 +441,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   vertical: mq.height(0.5),
                 ),
                 decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.1),
+                  color: statusColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(mq.width(1)),
                 ),
                 child: Row(

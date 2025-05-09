@@ -19,10 +19,10 @@ class CategoryCard extends StatelessWidget {
           width: 60, // Reduced from 75
           height: 60, // Reduced from 75
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12), // Slightly reduced radius
             border: Border.all(
-              color: Colors.grey.withOpacity(0.2),
+              color: Colors.grey.withValues(alpha: 0.2),
             ),
           ),
           child: Center( // Added Center widget

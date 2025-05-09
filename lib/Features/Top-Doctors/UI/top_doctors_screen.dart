@@ -310,10 +310,12 @@ class DoctorCard extends StatelessWidget {
           SizedBox(width: mq.width(1)),
           Text(
             label ?? '',
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: mq.width(3),
+              fontSize: mq.width(2),
               fontWeight: FontWeight.w500,
-              color: Colors.black87, // Text color
+              color: Colors.black87,
+              // Text color
             ),
           ),
         ],

@@ -11,7 +11,7 @@ class DoctorListSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mq = CustomMQ(context);
-    // Using the first two doctors from sample data
+    
     final List<DoctorModel> featuredDoctors = [
       sampleDoctors[0],
       sampleDoctors[1],

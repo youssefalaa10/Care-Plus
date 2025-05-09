@@ -35,9 +35,8 @@ flutter:
     - assets/icons/
     - assets/images/
   #   - images/a_dot_ham.jpeg
-  # For details regarding adding assets from package dependencies, see
-  # https://flutter.dev/to/asset-from-package
-  # example:
+
+
   fonts:
     - family: IconBroken
       fonts:
