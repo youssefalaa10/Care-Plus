@@ -2,12 +2,11 @@ import 'package:careplus/Core/styles/icon_broken.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../Core/DI/dependency_injection.dart';
+import '../../../Core/Routing/routes.dart';
 import '../../../Core/components/media_query.dart';
 import '../../../Core/styles/image_manager.dart';
 import '../Data/Model/doctor_model.dart';
 import '../Logic/doctor_cubit.dart';
-import '../../Doctor-Details/UI/doctor_details_screen.dart';
 
 class TopDoctors extends StatefulWidget {
   const TopDoctors({super.key});
@@ -238,14 +237,10 @@ class DoctorCard extends StatelessWidget {
       children: [
         GestureDetector(
           onTap: () {
-            Navigator.push(
+            Navigator.pushNamed(
               context,
-              MaterialPageRoute(
-                builder: (context) => BlocProvider(
-                  create: (context) => getIt<DoctorCubit>(),
-                  child: DoctorDetailsScreen(doctor: doctor),
-                ),
-              ),
+              Routes.doctorDetailsScreen,
+              arguments: doctor,
             );
           },
           child: _buildActionButton(

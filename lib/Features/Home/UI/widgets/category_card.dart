@@ -7,7 +7,8 @@ class CategoryCard extends StatelessWidget {
   const CategoryCard({
     super.key,
     required this.icon,
-    required this.label, Color? color,
+    required this.label,
+    Color? color,
   });
 
   @override
@@ -16,25 +17,25 @@ class CategoryCard extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 60, // Reduced from 75
-          height: 60, // Reduced from 75
+          width: 60,
+          height: 60,
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(12), // Slightly reduced radius
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: Colors.grey.withValues(alpha: 0.2),
             ),
           ),
-          child: Center( // Added Center widget
+          child: Center(
             child: Image.asset(
               icon,
-              width: 40, // Adjusted from 15
-              height: 40, // Adjusted from 10
-              fit: BoxFit.contain, // Added fit property
+              width: 40,
+              height: 40,
+              fit: BoxFit.contain,
             ),
           ),
         ),
-        const SizedBox(height: 6), // Reduced from 8
+        const SizedBox(height: 6),
         Text(
           label,
           style: TextStyle(

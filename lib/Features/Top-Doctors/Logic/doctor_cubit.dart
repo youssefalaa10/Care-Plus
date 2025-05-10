@@ -30,10 +30,10 @@ class DoctorCubit extends Cubit<DoctorState> {
   }
 
   // Load top rated doctors
-  void loadTopRatedDoctors({int limit = 10}) {
+  void loadTopRatedDoctors() {
     emit(DoctorLoading());
     try {
-      _doctorRepo.getTopRatedDoctors(limit: limit).listen(
+      _doctorRepo.getTopRatedDoctors().listen(
         (doctors) {
           emit(DoctorsLoaded(doctors));
         },
@@ -41,7 +41,6 @@ class DoctorCubit extends Cubit<DoctorState> {
           emit(DoctorError(error.toString()));
         },
         onDone: () {
-          // If no data was emitted and we're still in loading state, emit an empty list
           if (state is DoctorLoading) {
             emit(const DoctorsLoaded([]));
           }

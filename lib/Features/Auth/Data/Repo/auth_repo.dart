@@ -2,42 +2,71 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:careplus/Features/Auth/Data/Model/user_model.dart';
 
+import '../../../../Core/service/shared_prefs_service.dart';
+
 class AuthRepo {
   final FirebaseAuth _firebaseAuth;
+  final SharedPrefsService _sharedPrefsService;
 
-  AuthRepo({FirebaseAuth? firebaseAuth})
-      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+  AuthRepo({
+    FirebaseAuth? firebaseAuth,
+    required SharedPrefsService sharedPrefsService,
+  })  : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
+        _sharedPrefsService = sharedPrefsService;
+  final _firestore = FirebaseFirestore.instance;
 
-  // Get current user
-  UserModel? get currentUser {
+  Future<UserModel?> get currentUser async {
     final user = _firebaseAuth.currentUser;
     if (user == null) return null;
 
-    return UserModel(
-      uid: user.uid,
-      email: user.email ?? '',
-      name: user.displayName,
-      phoneNumber: user.phoneNumber,
-      photoUrl: user.photoURL,
-    );
+    try {
+      final doc = await _firestore.collection('users').doc(user.uid).get();
+      if (!doc.exists || doc.data() == null) return null;
+
+      return UserModel.fromJson(doc.data()!);
+    } catch (e, stacktrace) {
+      print('Error fetching current user: $e\n$stacktrace');
+      return null;
+    }
   }
 
-  // Stream of authentication state changes
   Stream<UserModel?> get authStateChanges {
-    return _firebaseAuth.authStateChanges().map((user) {
+    return _firebaseAuth.authStateChanges().asyncMap((user) async {
       if (user == null) return null;
 
-      return UserModel(
-        uid: user.uid,
-        email: user.email ?? '',
-        name: user.displayName,
-        phoneNumber: user.phoneNumber,
-        photoUrl: user.photoURL,
-      );
+      try {
+        final doc = await _firestore.collection('users').doc(user.uid).get();
+        if (!doc.exists || doc.data() == null) return null;
+
+        return UserModel.fromJson(doc.data()!);
+      } catch (e, stacktrace) {
+        print('Error in authStateChanges stream: $e\n$stacktrace');
+        return null;
+      }
     });
   }
 
-  // Sign in with email and password
+  Future<UserModel?> getUserFromPrefs() async {
+    return _sharedPrefsService.getUserData();
+  }
+
+  Future<void> saveUserToPrefs(UserModel user) async {
+    await _sharedPrefsService.saveUserData(user);
+
+    if (_firebaseAuth.currentUser != null) {
+      final idToken = await _firebaseAuth.currentUser!.getIdToken();
+      await _sharedPrefsService.saveAuthToken(idToken!);
+    }
+  }
+
+  Future<void> clearUserFromPrefs() async {
+    await _sharedPrefsService.clearSession();
+  }
+
+  bool isLoggedIn() {
+    return _sharedPrefsService.isLoggedIn();
+  }
+
   Future<UserModel> signInWithEmailAndPassword(
       String email, String password) async {
     try {
@@ -51,19 +80,21 @@ class AuthRepo {
         throw Exception('User not found');
       }
 
-      return UserModel(
-        uid: user.uid,
-        email: user.email ?? '',
-        name: user.displayName,
-        phoneNumber: user.phoneNumber,
-        photoUrl: user.photoURL,
-      );
+      final doc = await _firestore.collection('users').doc(user.uid).get();
+      if (!doc.exists) {
+        throw Exception('User profile not found in Firestore');
+      }
+
+      final userModel = UserModel.fromJson(doc.data()!);
+
+      await saveUserToPrefs(userModel);
+
+      return userModel;
     } on FirebaseAuthException catch (e) {
       throw _handleFirebaseAuthException(e);
     }
   }
 
-  // Register with email and password
   Future<UserModel> registerWithEmailAndPassword({
     required String email,
     required String password,
@@ -80,37 +111,30 @@ class AuthRepo {
         throw Exception('Failed to create user');
       }
 
-      // Update user profile with name
       await user.updateDisplayName(name);
 
-      // Create user document in Firestore
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-        'uid': user.uid,
-        'email': user.email,
-        'name': name,
-        'phoneNumber': user.phoneNumber,
-        'photoUrl': user.photoURL,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-
-      return UserModel(
+      final newUser = UserModel(
         uid: user.uid,
         email: user.email ?? '',
         name: name,
         phoneNumber: user.phoneNumber,
         photoUrl: user.photoURL,
+        appointments: [],
       );
+
+      await _firestore.collection('users').doc(user.uid).set(newUser.toJson());
+
+      return newUser;
     } on FirebaseAuthException catch (e) {
       throw _handleFirebaseAuthException(e);
     }
   }
 
-  // Sign out
   Future<void> signOut() async {
+    await clearUserFromPrefs();
     await _firebaseAuth.signOut();
   }
 
-  // Handle Firebase Auth exceptions
   Exception _handleFirebaseAuthException(FirebaseAuthException e) {
     switch (e.code) {
       case 'user-not-found':

@@ -7,10 +7,8 @@ abstract class DoctorState extends Equatable {
   List<Object> get props => [];
 }
 
-// Initial state
 class DoctorInitial extends DoctorState {}
 
-// Loading states
 class DoctorLoading extends DoctorState {}
 
 class AppointmentBookingLoading extends DoctorState {}
@@ -19,7 +17,6 @@ class AppointmentCancellationLoading extends DoctorState {}
 
 class AppointmentsLoading extends DoctorState {}
 
-// Success states
 class DoctorsLoaded extends DoctorState {
   final List<DoctorModel> doctors;
 
@@ -67,7 +64,6 @@ class DoctorAppointmentsLoaded extends DoctorState {
   List<Object> get props => [appointments];
 }
 
-// Error states
 class DoctorError extends DoctorState {
   final String message;
 

@@ -29,8 +29,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   bool _isLoading = true;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void initState() {
+    super.initState();
     _fetchAppointments();
   }
 
@@ -45,31 +45,28 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       final userId = authState.user!.uid;
       DoctorRepo().getUserAppointments(userId).listen((appointments) async {
         try {
-          // Only fetch doctor data if we have appointments
-          if (appointments.isNotEmpty) {
-            // Fetch doctor names for each appointment
-            final doctorIds =
-                appointments.map((a) => a.doctorId).toSet().toList();
+          // Fetch doctor names for each appointment
+          final doctorIds =
+              appointments.map((a) => a.doctorId).toSet().toList();
 
-            // Handle case where doctorIds might be empty
-            if (doctorIds.isNotEmpty) {
-              final doctorsSnapshot = await FirebaseFirestore.instance
-                  .collection('doctors')
-                  .where('id', whereIn: doctorIds)
-                  .get();
+          // Handle case where doctorIds might be empty
+          if (doctorIds.isNotEmpty) {
+            final doctorsSnapshot = await FirebaseFirestore.instance
+                .collection('doctors')
+                .where('id', whereIn: doctorIds)
+                .get();
 
-              final doctorMap = {
-                for (var doc in doctorsSnapshot.docs)
-                  doc['id'] as String: doc['name'] as String? ?? 'Unknown'
-              };
+            final doctorMap = {
+              for (var doc in doctorsSnapshot.docs)
+                doc['id'] as String: doc['name'] as String? ?? 'Unknown'
+            };
 
-              // Update each appointment with the doctor name
-              for (var i = 0; i < appointments.length; i++) {
-                final appt = appointments[i];
-                if (doctorMap.containsKey(appt.doctorId)) {
-                  appointments[i] = appointments[i]
-                      .copyWith(doctorName: doctorMap[appt.doctorId]);
-                }
+            // Update each appointment with the doctor name
+            for (var i = 0; i < appointments.length; i++) {
+              final appt = appointments[i];
+              if (doctorMap.containsKey(appt.doctorId)) {
+                appointments[i] = appointments[i]
+                    .copyWith(doctorName: doctorMap[appt.doctorId]);
               }
             }
           }
@@ -409,7 +406,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     ),
                     SizedBox(height: mq.height(0.5)),
                     Text(
-                      'Appointment ID: ${appt.id.substring(0, 8)}...',
+                      'Appointment ID: ${appt.id}...',
                       style: TextStyle(
                         fontSize: mq.width(3.5),
                         color: Colors.grey,
@@ -451,13 +448,13 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                           ? Icons.check_circle
                           : (isCanceled ? Icons.cancel : Icons.pending),
                       color: statusColor,
-                      size: mq.width(3),
+                      size: mq.width(2),
                     ),
                     SizedBox(width: mq.width(1)),
                     Text(
                       appt.status.capitalize(),
                       style: TextStyle(
-                        fontSize: mq.width(3),
+                        fontSize: mq.width(2.5),
                         color: statusColor,
                       ),
                     ),

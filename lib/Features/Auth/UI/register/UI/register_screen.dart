@@ -262,7 +262,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget _buildRegisterButton() {
+ Widget _buildRegisterButton() {
     return BlocBuilder<AuthCubit, AuthState>(
       builder: (context, state) {
         final isLoading = state.status == AuthStatus.loading;

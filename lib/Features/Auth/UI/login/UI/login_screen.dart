@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:careplus/Core/components/custom_text_form_field.dart';
 import 'package:careplus/Features/Auth/logic/auth_cubit.dart';
 import 'package:careplus/Features/Auth/logic/auth_state.dart';
-import 'package:careplus/Core/DI/dependency_injection.dart';
 import 'package:careplus/Core/Routing/routes.dart';
 
 import '../../../../../Core/components/custom_button.dart';
@@ -68,54 +67,51 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     ScreenUtil.init(context);
 
-    return BlocProvider(
-      create: (context) => getIt<AuthCubit>(),
-      child: BlocConsumer<AuthCubit, AuthState>(
-        listener: (context, state) {
-          if (state.status == AuthStatus.error) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                  content: Text(state.errorMessage ?? 'An error occurred')),
-            );
-          } else if (state.status == AuthStatus.authenticated) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Login successful')),
-            );
-            Navigator.pushReplacementNamed(context, Routes.mainLayout);
-          }
-        },
-        builder: (context, state) {
-          return Scaffold(
-            resizeToAvoidBottomInset: false,
-            backgroundColor: Colors.white,
-            body: SafeArea(
-              child: Center(
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24.w),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _buildHeaderSection(),
-                          SizedBox(height: 32.h),
-                          _buildFormFields(),
-                          SizedBox(height: 24.h),
-                          _buildSignInButton(),
-                          SizedBox(height: 16.h),
-                          _buildRegistrationLink(),
-                        ],
-                      ),
+    return BlocConsumer<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state.status == AuthStatus.error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(state.errorMessage ?? 'An error occurred')),
+          );
+        } else if (state.status == AuthStatus.authenticated) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Login successful')),
+          );
+          Navigator.pushReplacementNamed(context, Routes.mainLayout);
+        }
+      },
+      builder: (context, state) {
+        return Scaffold(
+          resizeToAvoidBottomInset: false,
+          backgroundColor: Colors.white,
+          body: SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24.w),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _buildHeaderSection(),
+                        SizedBox(height: 32.h),
+                        _buildFormFields(),
+                        SizedBox(height: 24.h),
+                        _buildSignInButton(),
+                        SizedBox(height: 16.h),
+                        _buildRegistrationLink(),
+                      ],
                     ),
                   ),
                 ),
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 

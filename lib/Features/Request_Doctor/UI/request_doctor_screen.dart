@@ -1,5 +1,6 @@
 import 'package:careplus/Core/styles/color_manager.dart';
 import 'package:careplus/Core/styles/icon_broken.dart';
+import 'package:careplus/Features/not_found/not_found_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -135,7 +136,7 @@ class _RequestDoctorScreenState extends State<RequestDoctorScreen> {
                     } else if (state is DoctorsLoaded) {
                       final doctors = _filterDoctors(state.doctors);
                       if (doctors.isEmpty) {
-                        return const Center(child: Text('No doctors found'));
+                        return NotFoundScreen(title: 'No doctors found',);
                       }
                       return ListView.builder(
                           itemCount: doctors.length,
@@ -209,7 +210,8 @@ class _RequestDoctorScreenState extends State<RequestDoctorScreen> {
                                       trailing: ElevatedButton(
                                         onPressed: () {
                                           Navigator.pushNamed(context,
-                                              Routes.doctorDetailsScreen, arguments: doctors[index]);
+                                              Routes.doctorDetailsScreen,
+                                              arguments: doctors[index]);
                                         },
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor:
@@ -275,7 +277,7 @@ class _RequestDoctorScreenState extends State<RequestDoctorScreen> {
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
-              SizedBox(width: 8.w),
+              SizedBox(width: 4.w),
               _isLoadingLocations
                   ? SizedBox(
                       width: 20.w,
@@ -340,7 +342,7 @@ class _RequestDoctorScreenState extends State<RequestDoctorScreen> {
             fontSize: 16.sp,
           ),
           prefixIcon: Icon(
-            IconBroken.search,  
+            IconBroken.search,
             color: Colors.purple,
             size: 20.sp,
           ),

@@ -1,5 +1,6 @@
 class Routes {
   static const String loginScreen = '/login_screen';
+  static const String splashScreen = '/splash_screen';  
   static const String registerScreen = '/register_screen';
   static const String mainLayout = '/main_layout';
   static const String doctorFinderScreen = '/doctor_finder_screen';

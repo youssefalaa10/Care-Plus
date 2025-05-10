@@ -1,13 +1,13 @@
 import 'package:careplus/Core/Routing/routes.dart';
 import 'package:careplus/Core/styles/color_manager.dart';
+import 'package:careplus/Core/styles/icon_broken.dart';
 import 'package:careplus/Features/Auth/logic/auth_cubit.dart';
-import 'package:careplus/Features/Doctor-Details/UI/doctor_details_screen.dart';
 import 'package:careplus/Features/Top-Doctors/UI/top_doctors_screen.dart';
 import 'package:careplus/Features/Top-Doctors/Data/Model/doctor_model.dart';
+import 'package:careplus/Features/not_found/not_found_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../Core/DI/dependency_injection.dart';
 import '../../../Core/components/media_query.dart';
 import '../../../Core/styles/image_manager.dart';
 import '../../Top-Doctors/Logic/doctor_cubit.dart';
@@ -29,9 +29,8 @@ class _DoctorFinderScreenState extends State<DoctorFinderScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<DoctorCubit>().loadTopRatedDoctors(limit: 5);
-    });
+
+    context.read<DoctorCubit>().loadTopRatedDoctors();
   }
 
   void _onSearchChanged(String query) {
@@ -85,7 +84,9 @@ class _DoctorFinderScreenState extends State<DoctorFinderScreen> {
                             .toList();
                       }
                       if (doctors.isEmpty) {
-                        return const Center(child: Text('No doctors found'));
+                        return NotFoundScreen(
+                          title: 'No doctors found',
+                        );
                       }
                       return ListView.builder(
                         physics: const NeverScrollableScrollPhysics(),
@@ -93,16 +94,10 @@ class _DoctorFinderScreenState extends State<DoctorFinderScreen> {
                         itemCount: doctors.length,
                         itemBuilder: (context, index) => GestureDetector(
                           onTap: () {
-                            Navigator.push(
+                            Navigator.pushNamed(
                               context,
-                              MaterialPageRoute(
-                                builder: (context) => BlocProvider(
-                                  create: (context) => getIt<DoctorCubit>(),
-                                  child: DoctorDetailsScreen(
-                                    doctor: doctors[index],
-                                  ),
-                                ),
-                              ),
+                              Routes.doctorDetailsScreen,
+                              arguments: doctors[index],
                             );
                           },
                           child: DoctorCard(
@@ -122,7 +117,7 @@ class _DoctorFinderScreenState extends State<DoctorFinderScreen> {
                               onPressed: () {
                                 context
                                     .read<DoctorCubit>()
-                                    .loadTopRatedDoctors(limit: 5);
+                                    .loadTopRatedDoctors();
                               },
                               child: const Text('Retry'),
                             ),
@@ -166,7 +161,7 @@ class HeaderSection extends StatelessWidget {
                 borderRadius: BorderRadius.circular(50),
               ),
               child: Icon(
-                Icons.settings,
+                IconBroken.user,
                 size: mq.width(6),
                 color: Colors.white,
               ),
@@ -188,12 +183,12 @@ class HeaderSection extends StatelessWidget {
                 ),
               ),
               PopupMenuItem<String>(
-                value: 'settings',
+                value: 'profile',
                 child: Row(
                   children: [
-                    Icon(Icons.settings, color: Colors.grey[700]),
+                    Icon(IconBroken.user, color: Colors.grey[700]),
                     SizedBox(width: mq.width(2)),
-                    const Text('Settings'),
+                    const Text('Profile'),
                   ],
                 ),
               ),

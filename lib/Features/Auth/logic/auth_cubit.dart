@@ -10,75 +10,95 @@ class AuthCubit extends Cubit<AuthState> {
   AuthCubit({required AuthRepo authRepo})
       : _authRepo = authRepo,
         super(AuthState.initial()) {
-    // Listen to auth state changes
     _authStateSubscription = _authRepo.authStateChanges.listen(
       (user) {
-        if (user != null) {
-         if(!isClosed) emit(AuthState.authenticated(user));
-        } else {
-         if(!isClosed) emit(AuthState.unauthenticated());
-        }
+        if (isClosed) return;
+        emit(user != null ? AuthState.authenticated(user) : AuthState.unauthenticated());
       },
       onError: (error) {
-       if(!isClosed) emit(AuthState.error(error.toString()));
+        if (isClosed) return;
+        emit(AuthState.error(error.toString()));
       },
     );
   }
 
-  // Check current authentication status
-  void checkAuthStatus() {
-    final user = _authRepo.currentUser;
-    if (user != null) {
-     if(!isClosed) emit(AuthState.authenticated(user));
-    } else {
-     if(!isClosed) emit(AuthState.unauthenticated());
+  Future<void> checkAuthStatus() async {
+    try {
+      final prefsUser = await _authRepo.getUserFromPrefs();
+      if (prefsUser != null && !isClosed) {
+        emit(AuthState.authenticated(prefsUser));
+      }
+      
+      final user = await _authRepo.currentUser;
+      if (isClosed) return;
+      
+      if (user != null) {
+        await _authRepo.saveUserToPrefs(user);
+        emit(AuthState.authenticated(user));
+      } else {
+        emit(AuthState.unauthenticated());
+      }
+    } catch (e, stacktrace) {
+      if (isClosed) return;
+      emit(AuthState.error(e.toString()));
+      print('Error in checkAuthStatus: $e\n$stacktrace');
     }
   }
 
-  // Sign in with email and password
   Future<void> signInWithEmailAndPassword(String email, String password) async {
     try {
-     if(!isClosed) emit(AuthState.loading());
+      if (isClosed) return;
+      emit(AuthState.loading());
       final user = await _authRepo.signInWithEmailAndPassword(email, password);
-     if(!isClosed) emit(AuthState.authenticated(user));
-    } catch (e) {
-     if(!isClosed) emit(AuthState.error(e.toString()));
+      if (isClosed) return;
+      emit(AuthState.authenticated(user));
+    } catch (e, stacktrace) {
+      if (isClosed) return;
+      emit(AuthState.error(e.toString()));
+      print('Error in signInWithEmailAndPassword: $e\n$stacktrace');
     }
   }
 
-  // Register with email and password
   Future<void> registerWithEmailAndPassword({
     required String email,
     required String password,
     required String name,
   }) async {
     try {
-     if(!isClosed) emit(AuthState.loading());
+      if (isClosed) return;
+      emit(AuthState.loading());
       final user = await _authRepo.registerWithEmailAndPassword(
         email: email,
         password: password,
         name: name,
       );
-     if(!isClosed) emit(AuthState.authenticated(user));
-    } catch (e) {
-     if(!isClosed) emit(AuthState.error(e.toString()));
+      await _authRepo.saveUserToPrefs(user);
+      if (isClosed) return;
+      emit(AuthState.authenticated(user));
+    } catch (e, stacktrace) {
+      if (isClosed) return;
+      emit(AuthState.error(e.toString()));
+      print('Error in registerWithEmailAndPassword: $e\n$stacktrace');
     }
   }
 
-  // Sign out
   Future<void> signOut() async {
     try {
-     if(!isClosed) emit(AuthState.loading());
+      if (isClosed) return;
+      emit(AuthState.loading());
       await _authRepo.signOut();
-     if(!isClosed) emit(AuthState.unauthenticated());
-    } catch (e) {
-     if(!isClosed) emit(AuthState.error(e.toString()));
+      if (isClosed) return;
+      emit(AuthState.unauthenticated());
+    } catch (e, stacktrace) {
+      if (isClosed) return;
+      emit(AuthState.error(e.toString()));
+      print('Error in signOut: $e\n$stacktrace');
     }
   }
 
   @override
-  Future<void> close() {
-    _authStateSubscription?.cancel();
+  Future<void> close() async {
+    await _authStateSubscription?.cancel();
     return super.close();
   }
 }

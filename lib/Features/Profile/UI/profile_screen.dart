@@ -72,10 +72,15 @@ class ProfileScreen extends StatelessWidget {
                   child: SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {
-                        context.read<AuthCubit>().signOut();
-                        Navigator.pushNamedAndRemoveUntil(
-                            context, Routes.loginScreen, (route) => false);
+                      onPressed: () async {
+                        final navigator = Navigator.of(context);
+
+                        await context.read<AuthCubit>().signOut();
+
+                        navigator.pushNamedAndRemoveUntil(
+                          Routes.loginScreen,
+                          (route) => false,
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,

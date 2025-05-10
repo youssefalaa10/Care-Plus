@@ -6,12 +6,17 @@ import 'package:careplus/Features/Auth/logic/auth_cubit.dart';
 import 'package:careplus/Features/Top-Doctors/Data/Repo/doctor_repo.dart';
 import 'package:careplus/Features/Top-Doctors/Logic/doctor_cubit.dart';
 
+import '../service/shared_prefs_service.dart';
+
 final getIt = GetIt.instance;
 
-void setUpGetIt() {
+void setUpGetIt() async {
+   await SharedPrefsService.init();
+  getIt.registerLazySingleton<SharedPrefsService>(() => SharedPrefsService());
   // Repositories
   getIt.registerLazySingleton<AuthRepo>(() => AuthRepo(
         firebaseAuth: FirebaseAuth.instance,
+        sharedPrefsService: getIt<SharedPrefsService>(),
       ));
 
   getIt.registerLazySingleton<DoctorRepo>(() => DoctorRepo(

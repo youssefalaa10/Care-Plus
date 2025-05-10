@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
-import '../../../Top-Doctors/Data/Model/doctor_model.dart';
+import '../../../Schedule/Data/Model/appointment_model.dart';
+
 
 class UserModel extends Equatable {
   final String uid;

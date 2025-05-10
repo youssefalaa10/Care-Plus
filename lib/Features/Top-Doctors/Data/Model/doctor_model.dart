@@ -55,7 +55,6 @@ class DoctorModel extends Equatable {
   factory DoctorModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>?;
     if (data == null) {
-      // Handle null data case
       return DoctorModel(
         id: doc.id,
         name: 'Unknown',
@@ -71,7 +70,6 @@ class DoctorModel extends Equatable {
       );
     }
 
-    // Handle potential null values in the data
     return DoctorModel(
       id: doc.id,
       name: data['name'] as String? ?? 'Unknown',

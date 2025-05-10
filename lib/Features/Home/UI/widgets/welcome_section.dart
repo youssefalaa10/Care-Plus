@@ -124,34 +124,40 @@ class HeaderSection extends StatelessWidget {
     );
   }
 
-  void _handleLogout(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Confirm Logout'),
-          content: const Text('Are you sure you want to logout?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                context.read<AuthCubit>().signOut();
+void _handleLogout(BuildContext context) {
+  final navigator = Navigator.of(context); 
 
-                Navigator.pushNamedAndRemoveUntil(
-                    context, Routes.loginScreen, (route) => false);
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Confirm Logout'),
+        content: const Text('Are you sure you want to logout?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => navigator.pop(), 
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              navigator.pop(); 
 
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Logged out successfully')),
-                );
-              },
-              child: const Text('Logout', style: TextStyle(color: Colors.red)),
-            ),
-          ],
-        );
-      },
-    );
-  }
+              await context.read<AuthCubit>().signOut();
+
+              navigator.pushNamedAndRemoveUntil(
+                  Routes.loginScreen, (route) => false);
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Logged out successfully')),
+              );
+            },
+            child: const Text('Logout', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+
 }

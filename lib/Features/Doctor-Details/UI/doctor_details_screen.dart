@@ -21,7 +21,7 @@ class DoctorDetailsScreen extends StatefulWidget {
 
 class _DoctorDetailsScreenState extends State<DoctorDetailsScreen> {
   int selectedDayIndex = 0;
-  int selectedTimeIndex = -1; // Track selected time slot index
+  int selectedTimeIndex = -1;
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +64,7 @@ class _DoctorDetailsScreenState extends State<DoctorDetailsScreen> {
                 onDaySelected: (index) {
                   setState(() {
                     selectedDayIndex = index;
-                    selectedTimeIndex = -1; // Reset time slot when day changes
+                    selectedTimeIndex = -1;
                   });
                 },
               ),
@@ -143,54 +143,18 @@ class ScheduleSection extends StatefulWidget {
 }
 
 class _ScheduleSectionState extends State<ScheduleSection> {
-  // Using the selectedIndex from parent widget
-
   @override
   Widget build(BuildContext context) {
     final mq = CustomMQ(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Schedules',
-              style: TextStyle(
-                fontSize: mq.width(4.5),
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                // Scroll to booking section instead of navigating to a separate screen
-                Scrollable.ensureVisible(
-                  context
-                          .findAncestorStateOfType<_VisitHourSectionState>()
-                          ?.context ??
-                      context,
-                  duration: const Duration(milliseconds: 500),
-                  curve: Curves.easeInOut,
-                );
-              },
-              child: Row(
-                children: [
-                  Text(
-                    'See All',
-                    style: TextStyle(
-                      color: Colors.grey.withValues(alpha: 0.5),
-                      fontSize: mq.width(3.8),
-                    ),
-                  ),
-                  Icon(
-                    Icons.chevron_right,
-                    size: mq.width(5),
-                    color: Colors.grey.withValues(alpha: 0.5),
-                  ),
-                ],
-              ),
-            ),
-          ],
+        Text(
+          'Schedules',
+          style: TextStyle(
+            fontSize: mq.width(4.5),
+            fontWeight: FontWeight.bold,
+          ),
         ),
         SizedBox(height: mq.height(2)),
         SizedBox(
@@ -225,6 +189,8 @@ class _ScheduleSectionState extends State<ScheduleSection> {
     final mq = CustomMQ(context);
     return Container(
       margin: EdgeInsets.only(right: mq.width(3)),
+      width: mq.width(19),
+      height: mq.height(8),
       padding: EdgeInsets.symmetric(
         horizontal: mq.width(4),
         vertical: mq.height(1),
@@ -280,9 +246,8 @@ class VisitHourSection extends StatefulWidget {
 }
 
 class _VisitHourSectionState extends State<VisitHourSection> {
-  int selectedTimeIndex = -1; // No time selected by default
+  int selectedTimeIndex = -1;
 
-  // Getter for the selected time slot
   TimeSlot? get selectedTimeSlot {
     if (selectedTimeIndex == -1) return null;
     final selectedDaySchedule =
@@ -290,7 +255,6 @@ class _VisitHourSectionState extends State<VisitHourSection> {
     return selectedDaySchedule.availableHours[selectedTimeIndex];
   }
 
-  // Getter for the selected day
   String get selectedDay {
     return widget.doctor.daySchedules[widget.selectedDayIndex].day;
   }
@@ -299,7 +263,6 @@ class _VisitHourSectionState extends State<VisitHourSection> {
   Widget build(BuildContext context) {
     final mq = CustomMQ(context);
 
-    // Get the selected day schedule
     final selectedDaySchedule =
         widget.doctor.daySchedules[widget.selectedDayIndex];
     final availableHours = selectedDaySchedule.availableHours;
@@ -315,61 +278,65 @@ class _VisitHourSectionState extends State<VisitHourSection> {
           ),
         ),
         SizedBox(height: mq.height(2)),
-        Wrap(
-          spacing: mq.width(3),
-          runSpacing: mq.height(2),
-          children: List.generate(
-            availableHours.length,
-            (index) {
-              final timeSlot = availableHours[index];
-              final isSelected = selectedTimeIndex == index;
-              final isBooked = timeSlot.isBooked;
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: availableHours.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: mq.width(3),
+            mainAxisSpacing: mq.height(2),
+            childAspectRatio: 3,
+          ),
+          itemBuilder: (context, index) {
+            final timeSlot = availableHours[index];
+            final isSelected = selectedTimeIndex == index;
+            final isBooked = timeSlot.isBooked;
 
-              return GestureDetector(
-                onTap: isBooked
-                    ? null
-                    : () {
-                        setState(() {
-                          selectedTimeIndex = index;
-                        });
-                        widget.onTimeSelected(
-                            index); // Call the callback to update parent
-                      },
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: mq.width(4),
-                    vertical: mq.height(1),
-                  ),
-                  decoration: BoxDecoration(
+            return GestureDetector(
+              onTap: isBooked
+                  ? null
+                  : () {
+                      setState(() {
+                        selectedTimeIndex = index;
+                      });
+                      widget.onTimeSelected(index);
+                    },
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: mq.width(4),
+                  vertical: mq.height(1.2),
+                ),
+                decoration: BoxDecoration(
+                  color: isBooked
+                      ? Colors.grey[300]
+                      : isSelected
+                          ? const Color(0xFFB28CFF)
+                          : Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
                     color: isBooked
-                        ? Colors.grey[300]
+                        ? Colors.grey[300]!
                         : isSelected
                             ? const Color(0xFFB28CFF)
-                            : Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: isBooked
-                          ? Colors.grey[300]!
-                          : isSelected
-                              ? const Color(0xFFB28CFF)
-                              : Colors.grey.shade300,
-                    ),
-                  ),
-                  child: Text(
-                    '${timeSlot.startTime} - ${timeSlot.endTime}',
-                    style: TextStyle(
-                      fontSize: mq.width(3.5),
-                      color: isBooked
-                          ? Colors.grey[500]
-                          : isSelected
-                              ? Colors.white
-                              : Colors.grey[600],
-                    ),
+                            : Colors.grey.shade300,
                   ),
                 ),
-              );
-            },
-          ),
+                alignment: Alignment.center,
+                child: Text(
+                  '${timeSlot.startTime} - ${timeSlot.endTime}',
+                  style: TextStyle(
+                    fontSize: mq.width(3.2),
+                    color: isBooked
+                        ? Colors.grey[500]
+                        : isSelected
+                            ? Colors.white
+                            : Colors.grey[600],
+                  ),
+                ),
+              ),
+            );
+          },
         ),
       ],
     );

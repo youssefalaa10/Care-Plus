@@ -8,8 +8,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'Core/DI/dependency_injection.dart';
 import 'Core/Routing/app_router.dart';
 import 'Features/Auth/logic/auth_cubit.dart';
+import 'Features/Top-Doctors/Logic/doctor_cubit.dart';
 import 'firebase_options.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,7 +17,6 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
 
   setUpGetIt();
 
@@ -42,17 +41,21 @@ class MyApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return MultiBlocProvider(
+        return  MultiBlocProvider(
           providers: [
-            BlocProvider<AuthCubit>(
+            BlocProvider(
               create: (context) => getIt<AuthCubit>(),
+            ),
+            // Provide DoctorCubit at app level to ensure data preloading
+            BlocProvider(
+              create: (context) => getIt<DoctorCubit>(),
             ),
           ],
           child: MaterialApp(
             title: 'Care Plus',
             debugShowCheckedModeBanner: false,
             navigatorKey: MyApp.navigatorKey,
-            initialRoute: Routes.registerScreen,
+            initialRoute: Routes.splashScreen,
             onGenerateRoute: appRouter.generateRoute,
           ),
         );

@@ -1,6 +1,5 @@
 import 'package:careplus/Core/DI/dependency_injection.dart';
 import 'package:careplus/Core/styles/image_manager.dart';
-import 'package:careplus/Features/Auth/logic/auth_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -22,20 +21,16 @@ class MainLayout extends StatefulWidget {
 class MainLayoutState extends State<MainLayout> {
   int _currentIndex = 0;
 
-  // Screen widgets
   final List<Widget> _screens = [
-    DoctorFinderScreen(),
-    MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => getIt<DoctorCubit>()),
-        BlocProvider(create: (context) => getIt<AuthCubit>()),
-      ],
+    BlocProvider(
+      create: (context) => getIt<DoctorCubit>(),
+      child: DoctorFinderScreen(),
+    ),
+   BlocProvider(
+      create: (context) => getIt<DoctorCubit>(),
       child: ScheduleScreen(),
     ),
-    BlocProvider(
-      create: (context) => getIt<AuthCubit>(),
-      child: ProfileScreen(),
-    ),
+    ProfileScreen(),
   ];
 
   @override
@@ -43,13 +38,10 @@ class MainLayoutState extends State<MainLayout> {
     return Scaffold(
       body: Stack(
         children: [
-          // Main content
           SafeArea(
             bottom: false,
             child: _screens[_currentIndex],
           ),
-
-          // Floating Navigation Bar
           Positioned(
             left: 20,
             right: 20,
