@@ -13,11 +13,11 @@ class AuthCubit extends Cubit<AuthState> {
     _authStateSubscription = _authRepo.authStateChanges.listen(
       (user) {
         if (isClosed) return;
-        emit(user != null ? AuthState.authenticated(user) : AuthState.unauthenticated());
+       if(!isClosed) emit(user != null ? AuthState.authenticated(user) : AuthState.unauthenticated());
       },
       onError: (error) {
         if (isClosed) return;
-        emit(AuthState.error(error.toString()));
+       if(!isClosed) emit(AuthState.error(error.toString()));
       },
     );
   }
@@ -34,13 +34,13 @@ class AuthCubit extends Cubit<AuthState> {
       
       if (user != null) {
         await _authRepo.saveUserToPrefs(user);
-        emit(AuthState.authenticated(user));
+        if(!isClosed) emit(AuthState.authenticated(user));
       } else {
         emit(AuthState.unauthenticated());
       }
     } catch (e, stacktrace) {
       if (isClosed) return;
-      emit(AuthState.error(e.toString()));
+     if(!isClosed) emit(AuthState.error(e.toString()));
       print('Error in checkAuthStatus: $e\n$stacktrace');
     }
   }

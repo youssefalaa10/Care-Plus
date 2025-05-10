@@ -117,8 +117,6 @@ class AuthRepo {
         uid: user.uid,
         email: user.email ?? '',
         name: name,
-        phoneNumber: user.phoneNumber,
-        photoUrl: user.photoURL,
         appointments: [],
       );
 

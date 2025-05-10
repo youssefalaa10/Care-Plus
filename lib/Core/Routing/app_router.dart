@@ -35,11 +35,9 @@ class AppRouter {
 
       // main layout
       case Routes.mainLayout:
-        // Ensure DoctorCubit is provided and loads data immediately
         return MaterialPageRoute(
           builder: (_) {
             final doctorCubit = getIt<DoctorCubit>();
-            // Load doctors immediately when navigating to main layout
             doctorCubit.loadDoctors();
             doctorCubit.loadTopRatedDoctors();
             
@@ -62,20 +60,14 @@ class AppRouter {
       // top doctors screen
       case Routes.topDoctorsScreen:
         return MaterialPageRoute(
-          builder: (_) => BlocProvider(
-            create: (context) => getIt<DoctorCubit>()..loadTopRatedDoctors(),
-            child: const TopDoctors(),
-          ),
+          builder: (_) => const TopDoctors(),
         );
 
       // doctor details screen
       case Routes.doctorDetailsScreen:
         final doctor = settings.arguments as DoctorModel;
         return MaterialPageRoute(
-          builder: (_) => BlocProvider(
-            create: (context) => getIt<DoctorCubit>(),
-            child: DoctorDetailsScreen(doctor: doctor),
-          ),
+          builder: (_) => DoctorDetailsScreen(doctor: doctor),
         );
 
       // schedule screen

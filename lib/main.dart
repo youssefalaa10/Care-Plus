@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'Core/DI/dependency_injection.dart';
 import 'Core/Routing/app_router.dart';
+import 'Core/service/bloc_observer.dart';
 import 'Features/Auth/logic/auth_cubit.dart';
 import 'Features/Top-Doctors/Logic/doctor_cubit.dart';
 import 'firebase_options.dart';
@@ -19,7 +20,7 @@ void main() async {
   );
 
   setUpGetIt();
-
+  Bloc.observer = MyBlocObserver();
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);

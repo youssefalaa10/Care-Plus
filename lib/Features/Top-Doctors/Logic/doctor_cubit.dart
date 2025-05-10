@@ -14,46 +14,46 @@ class DoctorCubit extends Cubit<DoctorState> {
 
   // Load all doctors
   void loadDoctors() {
-    emit(DoctorLoading());
+    if (!isClosed) emit(DoctorLoading());
     try {
       _doctorRepo.getAllDoctors().listen(
         (doctors) {
-          emit(DoctorsLoaded(doctors));
+          if (!isClosed) emit(DoctorsLoaded(doctors));
         },
         onError: (error) {
-          emit(DoctorError(error.toString()));
+          if (!isClosed) emit(DoctorError(error.toString()));
         },
       );
     } catch (e) {
-      emit(DoctorError(e.toString()));
+      if (!isClosed) emit(DoctorError(e.toString()));
     }
   }
 
   // Load top rated doctors
   void loadTopRatedDoctors() {
-    emit(DoctorLoading());
+    if (!isClosed) emit(DoctorLoading());
     try {
       _doctorRepo.getTopRatedDoctors().listen(
         (doctors) {
-          emit(DoctorsLoaded(doctors));
+          if (!isClosed) emit(DoctorsLoaded(doctors));
         },
         onError: (error) {
-          emit(DoctorError(error.toString()));
+          if (!isClosed) emit(DoctorError(error.toString()));
         },
         onDone: () {
           if (state is DoctorLoading) {
-            emit(const DoctorsLoaded([]));
+            if (!isClosed) emit(const DoctorsLoaded([]));
           }
         },
       );
     } catch (e) {
-      emit(DoctorError(e.toString()));
+      if (!isClosed) emit(DoctorError(e.toString()));
     }
   }
 
   // Search doctors
   void searchDoctors(String query) {
-    emit(DoctorLoading());
+    if (!isClosed) emit(DoctorLoading());
     try {
       if (query.isEmpty) {
         loadDoctors();
@@ -62,29 +62,29 @@ class DoctorCubit extends Cubit<DoctorState> {
 
       _doctorRepo.searchDoctors(query).listen(
         (doctors) {
-          emit(DoctorsLoaded(doctors));
+          if (!isClosed) emit(DoctorsLoaded(doctors));
         },
         onError: (error) {
-          emit(DoctorError(error.toString()));
+          if (!isClosed) emit(DoctorError(error.toString()));
         },
       );
     } catch (e) {
-      emit(DoctorError(e.toString()));
+      if (!isClosed) emit(DoctorError(e.toString()));
     }
   }
 
   // Get doctor by ID
   Future<void> getDoctorById(String doctorId) async {
-    emit(DoctorLoading());
+    if (!isClosed) emit(DoctorLoading());
     try {
       final doctor = await _doctorRepo.getDoctorById(doctorId);
       if (doctor != null) {
-        emit(DoctorDetailLoaded(doctor));
+        if (!isClosed) emit(DoctorDetailLoaded(doctor));
       } else {
-        emit(const DoctorError('Doctor not found'));
+        if (!isClosed) emit(const DoctorError('Doctor not found'));
       }
     } catch (e) {
-      emit(DoctorError(e.toString()));
+      if (!isClosed) emit(DoctorError(e.toString()));
     }
   }
 
@@ -95,7 +95,7 @@ class DoctorCubit extends Cubit<DoctorState> {
     required String day,
     required TimeSlot timeSlot,
   }) async {
-    emit(AppointmentBookingLoading());
+    if (!isClosed) emit(AppointmentBookingLoading());
     try {
       final appointment = await _doctorRepo.bookAppointment(
         doctorId: doctorId,
@@ -103,54 +103,54 @@ class DoctorCubit extends Cubit<DoctorState> {
         day: day,
         timeSlot: timeSlot,
       );
-      emit(AppointmentBookingSuccess(appointment));
+      if (!isClosed) emit(AppointmentBookingSuccess(appointment));
     } catch (e) {
-      emit(AppointmentBookingError(e.toString()));
+      if (!isClosed) emit(AppointmentBookingError(e.toString()));
     }
   }
 
   // Cancel appointment
   Future<void> cancelAppointment(Appointment appointment) async {
-    emit(AppointmentCancellationLoading());
+    if (!isClosed) emit(AppointmentCancellationLoading());
     try {
       await _doctorRepo.cancelAppointment(appointment);
-      emit(AppointmentCancellationSuccess());
+      if (!isClosed) emit(AppointmentCancellationSuccess());
     } catch (e) {
-      emit(AppointmentCancellationError(e.toString()));
+      if (!isClosed) emit(AppointmentCancellationError(e.toString()));
     }
   }
 
   // Load user appointments
   void loadUserAppointments(String userId) {
-    emit(AppointmentsLoading());
+    if (!isClosed) emit(AppointmentsLoading());
     try {
       _doctorRepo.getUserAppointments(userId).listen(
         (appointments) {
-          emit(UserAppointmentsLoaded(appointments));
+          if (!isClosed) emit(UserAppointmentsLoaded(appointments));
         },
         onError: (error) {
-          emit(AppointmentsError(error.toString()));
+          if (!isClosed) emit(AppointmentsError(error.toString()));
         },
       );
     } catch (e) {
-      emit(AppointmentsError(e.toString()));
+      if (!isClosed) emit(AppointmentsError(e.toString()));
     }
   }
 
   // Load doctor appointments
   void loadDoctorAppointments(String doctorId) {
-    emit(AppointmentsLoading());
+    if (!isClosed) emit(AppointmentsLoading());
     try {
       _doctorRepo.getDoctorAppointments(doctorId).listen(
         (appointments) {
-          emit(DoctorAppointmentsLoaded(appointments));
+          if (!isClosed) emit(DoctorAppointmentsLoaded(appointments));
         },
         onError: (error) {
-          emit(AppointmentsError(error.toString()));
+          if (!isClosed) emit(AppointmentsError(error.toString()));
         },
       );
     } catch (e) {
-      emit(AppointmentsError(e.toString()));
+      if (!isClosed) emit(AppointmentsError(e.toString()));
     }
   }
 }
